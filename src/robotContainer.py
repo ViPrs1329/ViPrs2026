@@ -2,6 +2,7 @@ import commands2.button
 from commands2 import SequentialCommandGroup
 from commands2.button import CommandXboxController
 from commands2.button import CommandJoystick
+from commands2.sysid import SysIdRoutine
 
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.auto import NamedCommands
@@ -16,6 +17,7 @@ from wpimath.geometry import Pose2d
 from wpimath.geometry import Rotation2d
 from wpimath.geometry import Translation2d
 from wpimath.kinematics import ChassisSpeeds
+from wpimath.units import rotationsToRadians
 from wpimath import units
 from wpilib import SendableChooser
 from wpilib import SmartDashboard
@@ -30,13 +32,18 @@ from commands2 import CommandScheduler
 from commands2.button import CommandXboxController
 from commands2.button import Trigger
 
+from phoenix6 import swerve
+
 from subsystems.DriveSubsystem import DriveSubsystem
+from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
-from subsystems.fnsSubsystem import FnsSubsystem
 
 from controlsSubsystemWrapper import SubsystemWrapper
 
 from constants import Drive
+
+from generated.tuner_constants import TunerConstants
+from telemetry import Telemetry
 
 class RobotContainer:
     """
@@ -47,9 +54,8 @@ class RobotContainer:
     def __init__(self):
         #TODO add other subsystems as needed
         self.autoChooser: SendableChooser
-        self.drivetrain: DriveSubsystem
+        self.drivetrain: CommandSwerveDrivetrain
         self.limelight: LimelightSubsystem
-        self.fns: FnsSubsystem
         self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
@@ -59,6 +65,34 @@ class RobotContainer:
         self.initAutoChooser()
         self.initCommands()
         self.configureButtonBindings()
+
+        self.maxSpeed = (
+            TunerConstants.speed_at_12_volts
+        )  # speed_at_12_volts desired top speed
+        self.maxAngularRate = rotationsToRadians(
+            0.75
+        )  # 3/4 of a rotation per second max angular velocity
+
+        self.drive = (
+            swerve.requests.FieldCentric()
+            .with_deadband(self.maxSpeed * 0.1)
+            .with_rotational_deadband(
+                self.maxAngularRate * 0.1
+            )  # Add a 10% deadband
+            .with_drive_request_type(
+                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+            )  # Use open-loop control for drive motors
+        )
+        self.brake = swerve.requests.SwerveDriveBrake()
+        self.point = swerve.requests.PointWheelsAt()
+        self.forwardStraight = (
+            swerve.requests.RobotCentric()
+            .with_drive_request_type(
+                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+            )
+        )
+
+        self._logger = Telemetry(self.maxSpeed)
         
     def initAutoChooser(self):
         self.autoChooser = AutoBuilder.buildAutoChooser("Autos")
@@ -68,9 +102,10 @@ class RobotContainer:
         """Instantiate the robot's subsystems."""
         
         # create subsystems
-        self.drivetrain = DriveSubsystem(self.fns.getOdometry)
+        # self.drivetrain = DriveSubsystem(self.fns.getOdometry)
+        self.drivetrain = TunerConstants.create_drivetrain()
         self.limelight = LimelightSubsystem()
-        self.fns = FnsSubsystem(self.drivetrain.getPose, self.limelight.getRobotPositionFieldRelative, self.drivetrain.resetPose)
+        
         #TODO add other subsystems as needed
 
         # create a wrapper for the subsystems
@@ -107,22 +142,44 @@ class RobotContainer:
         """Configure the button bindings for user input."""
                
         self.drivetrain.setDefaultCommand(
-            RunCommand(
-                lambda: self.drivetrain.controllerDrive(
-                    -self.drivingController.getLeftY(),
-                    -self.drivingController.getLeftX(),
-                    -self.drivingController.getRightX()
-                ),
-                self.drivetrain
+            self.drivetrain.apply_request(
+                lambda: (
+                    self.drive.with_velocity_x(
+                        -self.drivingController.getLeftY() * self.maxSpeed
+                    ) # Drive forward with negative Y (forward)
+                    .with_velocity_y(
+                        -self.drivingController.getLeftX() * self.maxSpeed
+                    ) # DRive left with negative X (left)
+                    .with_rotational_rate(
+                        -self.drivingController.getRightX() * self.maxAngularRate
+                    ) # Drive counterclockwise with negative X (left)
+                )
+            )
+        )
+
+        # Idle while the robot is diabled. This ensures the configured
+        # neutral mode is applied to the drive motors while diabled.
+        idle = swerve.requests.Idle()
+        Trigger(DriverStation.isDisabled).whileTrue(
+            self.drivetrain.apply_request(lambda: idle).ignoringDisable(True)
+        )
+
+        self.drivingController.a().whileTrue(self.drivetrain.apply_request(lambda: self.brake))
+        self.drivingController.b().whileTrue(
+            self.drivetrain.apply_request(
+                lambda: self.point.with_module_direction(
+                    Rotation2d(-self.drivingController.getLeftY(), -self.drivingController.getLeftX())
+                )
             )
         )
 
         # Bind the reset gyro command to the X button on the controller
         self.drivingController.x().onTrue(
-            InstantCommand(
-                lambda: self.drivetrain.rezeroGyro(),
-                self.drivetrain
-            )
+            self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
+        )
+
+        self.drivetrain.register_telemetry(
+            lambda state: self._logger.telemeterize(state)
         )
 
         #TODO add other button bindings as needed

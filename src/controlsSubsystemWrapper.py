@@ -1,4 +1,5 @@
 from subsystems.DriveSubsystem import DriveSubsystem
+from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
 import constants as Consts
 from commands2 import InstantCommand
@@ -14,9 +15,10 @@ from ntcore import BooleanPublisher
 from ntcore import StructPublisher
 
 from wpimath.geometry import Pose2d
+from wpilib import Timer
 
 class SubsystemWrapper(Subsystem):
-    def __init__(self, drivetrain: DriveSubsystem, limelight: LimelightSubsystem):
+    def __init__(self, drivetrain: CommandSwerveDrivetrain, limelight: LimelightSubsystem):
         """
         Wrapper class that coordinates multiple subsystems to perform complex robot actions.
 
@@ -25,7 +27,7 @@ class SubsystemWrapper(Subsystem):
         """        
 
         #TODO add other subsystems as needed
-        self.drivetrain: DriveSubsystem
+        self.drivetrain: CommandSwerveDrivetrain
         self.limelight: LimelightSubsystem
         self.resetBeforeTeleopCommand: SequentialCommandGroup
         self.resetSubsystemsCommand: SequentialCommandGroup
@@ -39,50 +41,14 @@ class SubsystemWrapper(Subsystem):
 
         self.resetBeforeTeleopCommand = SequentialCommandGroup(
             # Safety first - stop all motion
-            InstantCommand(
-                lambda: self.drivetrain.stopDrive(),
-                self.drivetrain
-            ),
-            InstantCommand(
-                lambda: self.drivetrain.switchToTeleop(),
-                self.drivetrain
-            ),
             # Move mechanisms to safe starting positions
             PrintCommand("Resetting subsystems for teleop...")
         )
 
         self.resetBeforeAutonomousCommand = SequentialCommandGroup(
             # Safety first - stop all motion
-            InstantCommand(
-                lambda: self.drivetrain.stopDrive(),
-                self.drivetrain
-            ),
-            InstantCommand(
-                lambda: self.drivetrain.switchToAutonomous(),
-                self.drivetrain
-            ),
             # Move mechanisms to autonomous starting positions
             PrintCommand("Resetting subsystems for autonomous...")
-        )
-
-        self.resetSubsystemsCommand = SequentialCommandGroup(
-            # Stop all motion first for safety
-            InstantCommand(
-                lambda: self.drivetrain.stopDrive(),
-                self.drivetrain
-            ),
-
-            #TODO call initialise() methods for other subsystems here
-
-            # Zero the gyro last (after motion has stopped)
-            InstantCommand(
-                lambda: self.drivetrain.rezeroGyro(),
-                self.drivetrain
-            ),
-
-            #TODO Move to default positions after zeroing
-
-            PrintCommand("All subsystems reset.")
         )
 
         # Initialize NetworkTables logging
@@ -99,7 +65,7 @@ class SubsystemWrapper(Subsystem):
         """Update NetworkTables with current subsystem states"""
         
         # Drivetrain logging
-        self.driveRotationPub.set(self.drivetrain.getPose())
+        self.driveRotationPub.set(self.drivetrain.get_state().pose)
         
         # Limelight logging
         self.targetVisiblePub.set(self.limelight.canSeeTarget())
@@ -113,6 +79,10 @@ class SubsystemWrapper(Subsystem):
     def periodic(self) -> None:
         """Called periodically, use for updating NetworkTables"""
         self.updateNetworkTables()
+
+        visionRobotPose: Pose2d | None = self.limelight.getRobotPositionFieldRelative()
+        if visionRobotPose is not None:
+            self.drivetrain.add_vision_measurement(visionRobotPose, Timer.getFPGATimestamp(), Consts.Drive.Consts.visionMeasurementStdDevs)
 
     def resetSubsystems(self) -> None:
         """

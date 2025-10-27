@@ -89,6 +89,8 @@ class Drive:
         #TODO implement this in the code
         wheelFF: float = 0.05
 
+        visionMeasurementStdDevs: tuple[float, float, float] = (0.1, 0.1, 0.1)  # in meters and radians
+
     class States:
         # modes for the drive system
         # autonomous mode uses pathplanner and any other 
