@@ -51,6 +51,12 @@ class SubsystemWrapper(Subsystem):
             PrintCommand("Resetting subsystems for autonomous...")
         )
 
+        self.resetSubsystemsCommand = SequentialCommandGroup(
+            # Safety first - stop all motion
+            # Move mechanisms to default positions
+            PrintCommand("Resetting all subsystems...")
+        )
+
         # Initialize NetworkTables logging
         self.nt = NetworkTableInstance.getDefault()
         self.logTable = self.nt.getTable("SubsystemWrapper")
