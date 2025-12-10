@@ -42,7 +42,7 @@ from controlsSubsystemWrapper import SubsystemWrapper
 
 from constants import Drive
 
-from generated.tuner_constants import TunerConstants
+from generated.tuner_constants_20251205 import TunerConstants
 from telemetry import Telemetry
 
 class RobotContainer:
