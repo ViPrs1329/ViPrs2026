@@ -3,6 +3,7 @@ from commands2 import SequentialCommandGroup
 from commands2.button import CommandXboxController
 from commands2.button import CommandJoystick
 from commands2.sysid import SysIdRoutine
+from commands2.commandscheduler import CommandScheduler
 
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.auto import NamedCommands
@@ -117,10 +118,10 @@ class RobotContainer:
 
         # register subsystems with the command scheduler
         #TODO register other subsystems as needed
-        commands2.CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
-        commands2.CommandScheduler.getInstance().registerSubsystem(self.limelight)
-        commands2.CommandScheduler.getInstance().registerSubsystem(self.subsystemWrapper)
-
+        CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
+        CommandScheduler.getInstance().registerSubsystem(self.limelight)
+        CommandScheduler.getInstance().registerSubsystem(self.subsystemWrapper)
+        
     def initControls(self):
         """Instantiate the robot's control objects"""
         
