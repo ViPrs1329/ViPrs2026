@@ -21,9 +21,14 @@
       "Pos": "369,95",
       "Size": "400,200"
     },
+    "###/SmartDashboard/Auto Chooser": {
+      "Collapsed": "0",
+      "Pos": "350,41",
+      "Size": "254,54"
+    },
     "###FMS": {
       "Collapsed": "0",
-      "Pos": "5,575",
+      "Pos": "3,533",
       "Size": "283,140"
     },
     "###Joysticks": {
@@ -48,12 +53,12 @@
     },
     "###System Joysticks": {
       "Collapsed": "0",
-      "Pos": "5,350",
+      "Pos": "6,309",
       "Size": "192,218"
     },
     "###Timing": {
       "Collapsed": "0",
-      "Pos": "5,150",
+      "Pos": "5,137",
       "Size": "135,173"
     },
     "Debug##Default": {

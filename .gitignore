@@ -1,0 +1,6 @@
+# Ignore Phoenix 6 logs
+src/logs/
+src/ctre_sim/
+*.wpilog
+*.hoot
+*.dat
