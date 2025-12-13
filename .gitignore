@@ -1,6 +1,13 @@
-# Ignore Phoenix 6 logs
+# Ignore all Python bytecode folders anywhere in the project
+__pycache__/
+*.pyc
+
+# Ignore Phoenix 6 logs and sim data specifically in the src folder
 src/logs/
 src/ctre_sim/
+
+# Ignore loose log files and simulation UI layouts
 *.wpilog
 *.hoot
-*.dat
+*-window.json
+simgui.json
