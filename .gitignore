@@ -9,5 +9,3 @@ src/ctre_sim/
 # Ignore loose log files and simulation UI layouts
 *.wpilog
 *.hoot
-*-window.json
-simgui.json
