@@ -126,7 +126,9 @@ class RobotContainer:
         """Instantiate the robot's control objects"""
         
         self.drivingController = CommandXboxController(0)
-        self.operatorController = CommandJoystick(1)
+
+        # so i can test the driving without the program errroring out
+        # self.operatorController = CommandJoystick(1)
         #TODO verify that these are the correct ports
         #TODO verify that we will need a xbox controller and a button board
 
