@@ -35,7 +35,6 @@ from commands2.button import Trigger
 
 from phoenix6 import swerve
 
-from subsystems.DriveSubsystem import DriveSubsystem
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
 

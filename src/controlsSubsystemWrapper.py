@@ -1,4 +1,3 @@
-from subsystems.DriveSubsystem import DriveSubsystem
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
 import constants as Consts

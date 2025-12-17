@@ -22,3 +22,7 @@ pip install robotpy[all]
 ```powershell
 pip install robotpy[package name]
 ```
+### install robotpy onto robot:
+```powershell
+robotpy installer install robotpy
+```
