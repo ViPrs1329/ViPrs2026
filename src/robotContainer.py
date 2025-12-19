@@ -70,8 +70,8 @@ class RobotContainer:
             TunerConstants.speed_at_12_volts * 0.25
         )  # speed_at_12_volts desired top speed
         self.maxAngularRate = rotationsToRadians(
-            0.75
-        )  # 3/4 of a rotation per second max angular velocity
+            2.0
+        )  # 2 rotations per second max angular velocity
 
         self.drive = (
             swerve.requests.FieldCentric()
