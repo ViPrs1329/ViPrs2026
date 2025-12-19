@@ -147,7 +147,7 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                        -self.drivingController.getLeftY() * self.maxSpeed
+                        self.drivingController.getLeftY() * self.maxSpeed
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
                         -self.drivingController.getLeftX() * self.maxSpeed
