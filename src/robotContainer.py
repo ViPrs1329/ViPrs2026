@@ -67,7 +67,7 @@ class RobotContainer:
         self.configureButtonBindings()
 
         self.maxSpeed = (
-            TunerConstants.speed_at_12_volts
+            TunerConstants.speed_at_12_volts * 0.25
         )  # speed_at_12_volts desired top speed
         self.maxAngularRate = rotationsToRadians(
             0.75
