@@ -13,7 +13,7 @@ class GoToFeeder(Command):
     def initialize(self):
         # Code to initialize the command
         self.path: PathPlannerPath = PathPlannerPath.fromPathFile("Feeder")
-        self.constraints: PathConstraints = PathConstraints(4.0, 2.0, 0.5, 0.1)
+        self.constraints: PathConstraints = PathConstraints(4.0, 3.0, 1.0, 0.1)
         self.followPathCommand: Command = AutoBuilder.pathfindThenFollowPath(self.path, self.constraints)
         self.followPathCommand.schedule()
 
