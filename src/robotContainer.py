@@ -40,6 +40,8 @@ from subsystems.LimelightSubsystem import LimelightSubsystem
 
 from controlsSubsystemWrapper import SubsystemWrapper
 
+from commands.gotoFeeder import GoToFeeder
+
 from generated.tuner_constants_20251205 import TunerConstants
 from telemetry import Telemetry
 
@@ -209,6 +211,10 @@ class RobotContainer:
             InstantCommand(self.goSlow)
         ).onFalse(
             InstantCommand(self.goFast)
+        )
+
+        self.drivingController.leftBumper().onTrue(
+            GoToFeeder(self.drivetrain)
         )
 
         self.drivetrain.register_telemetry(
