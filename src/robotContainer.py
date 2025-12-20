@@ -141,6 +141,22 @@ class RobotContainer:
         NamedCommands.registerCommand("Hello", PrintCommand("Hello"))
         #TODO add other commands as needed
 
+    def inputShaper(x: float):
+        """Adds a gain curve to the controller input
+        and adds an input deadzone."""
+        if abs(x) < 0.01:
+            return 0
+            
+        return (max(min(x, -1), 1)) ** 3
+
+    def rotInputShaper(x: float):
+        """Adds a gain curve to the rotation input
+        and adds a deadzone to it."""
+        if abs(x) < 0.01:
+            return 0
+            
+        return x
+
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
                
@@ -148,13 +164,13 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                       -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
+                       -inputShaper(self.drivingController.getLeftY()) * self.maxSpeed * self.driveInputScalar
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
+                        -inputShaper(self.drivingController.getLeftX()) * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
-                        -self.drivingController.getRightX() * self.maxAngularRate
+                        -rotInputShaper(self.drivingController.getRightX()) * self.maxAngularRate
                     ) # Drive counterclockwise with negative X (left)
                 )
             )
