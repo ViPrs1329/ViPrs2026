@@ -84,8 +84,8 @@ class TunerConstants:
     _wheel_radius: units.meter = inchesToMeters(2)
 
     # Adjust these to the robot
-    _invert_left_side = False # False
-    _invert_right_side = True # True
+    _invert_left_side = True # False
+    _invert_right_side = False # True
 
     _pigeon_id = 0
 
