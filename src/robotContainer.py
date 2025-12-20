@@ -59,6 +59,7 @@ class RobotContainer:
         self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
+        self.driveInputScalar: float = 1.0
 
         self.initSubsystems()
         self.initControls()
@@ -67,11 +68,11 @@ class RobotContainer:
         self.configureButtonBindings()
 
         self.maxSpeed = (
-            TunerConstants.speed_at_12_volts * 0.25
+            TunerConstants.speed_at_12_volts
         )  # speed_at_12_volts desired top speed
         self.maxAngularRate = rotationsToRadians(
-            2.0
-        )  # 2 rotations per second max angular velocity
+            0.75
+        )  # 3/4 rotations per second max angular velocity
 
         self.drive = (
             swerve.requests.FieldCentric()
@@ -147,10 +148,10 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                       -self.drivingController.getLeftY() * self.maxSpeed
+                       -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        -self.drivingController.getLeftX() * self.maxSpeed
+                        -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
                         -self.drivingController.getRightX() * self.maxAngularRate
@@ -178,6 +179,12 @@ class RobotContainer:
         # Bind the reset gyro command to the X button on the controller
         self.drivingController.x().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
+        )
+
+        self.drivingController.rightTrigger().onTrue(
+            self.driveInputScalar = 0.1
+        ).onFalse(
+            self.driveInputScalar = 1
         )
 
         self.drivetrain.register_telemetry(
