@@ -40,8 +40,6 @@ from subsystems.LimelightSubsystem import LimelightSubsystem
 
 from controlsSubsystemWrapper import SubsystemWrapper
 
-from constants import Drive
-
 from generated.tuner_constants_20251205 import TunerConstants
 from telemetry import Telemetry
 
@@ -59,7 +57,7 @@ class RobotContainer:
         self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
-        self.driveInputScalar: float = 1.0
+        self.driveInputScalar: float
 
         self.initSubsystems()
         self.initControls()
@@ -126,6 +124,7 @@ class RobotContainer:
         """Instantiate the robot's control objects"""
         
         self.drivingController = CommandXboxController(0)
+        self.driveInputScalar = 1.0
 
         # so i can test the driving without the program errroring out
         # self.operatorController = CommandJoystick(1)
@@ -141,21 +140,27 @@ class RobotContainer:
         NamedCommands.registerCommand("Hello", PrintCommand("Hello"))
         #TODO add other commands as needed
 
-    def inputShaper(x: float):
+    def inputShaper(self, x: float):
         """Adds a gain curve to the controller input
         and adds an input deadzone."""
         if abs(x) < 0.2:
             return 0
             
-        return (max(min(x, -1), 1)) ** 3
+        return (min(max(x, -1), 1)) ** 3
 
-    def rotInputShaper(x: float):
+    def rotInputShaper(self, x: float):
         """Adds a gain curve to the rotation input
         and adds a deadzone to it."""
         if abs(x) < 0.1:
             return 0
             
         return x
+    
+    def goSlow(self):
+        self.driveInputScalar = 0.1
+
+    def goFast(self):
+        self.driveInputScalar = 1.0
 
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
@@ -198,9 +203,9 @@ class RobotContainer:
         )
 
         self.drivingController.rightTrigger().onTrue(
-            self.driveInputScalar = 0.1
+            InstantCommand(self.goSlow)
         ).onFalse(
-            self.driveInputScalar = 1
+            InstantCommand(self.goFast)
         )
 
         self.drivetrain.register_telemetry(
