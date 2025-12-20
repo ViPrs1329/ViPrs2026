@@ -43,6 +43,8 @@ from controlsSubsystemWrapper import SubsystemWrapper
 from generated.tuner_constants_20251205 import TunerConstants
 from telemetry import Telemetry
 
+from numpy import sqrt
+
 class RobotContainer:
     """
     This class is where the bulk of the robot's resources 
@@ -140,19 +142,18 @@ class RobotContainer:
         NamedCommands.registerCommand("Hello", PrintCommand("Hello"))
         #TODO add other commands as needed
 
-    def inputShaper(self, x: float):
-        """Adds a gain curve to the controller input
-        and adds an input deadzone."""
-        if abs(x) < 0.2:
-            return 0
-            
-        return (min(max(x, -1), 1)) ** 3
+    def inputShaper(self, x: float, y: float):
+        """Adds a gain curve to the controller input"""
+
+        d: float = sqrt(x ** 2 + y ** 2)
+
+        d = min(d, 1)
+        factor: float = d ** 3
+
+        return (factor * x, factor * y)
 
     def rotInputShaper(self, x: float):
-        """Adds a gain curve to the rotation input
-        and adds a deadzone to it."""
-        if abs(x) < 0.1:
-            return 0
+        """Adds a gain curve to the rotation input"""
             
         return x
     
@@ -169,10 +170,12 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                       -self.inputShaper(self.drivingController.getLeftY()) * self.maxSpeed * self.driveInputScalar
+                       -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[0] * self.maxSpeed * self.driveInputScalar
+                       # -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        -self.inputShaper(self.drivingController.getLeftX()) * self.maxSpeed * self.driveInputScalar
+                        -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[1] * self.maxSpeed * self.driveInputScalar
+                        # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
                         -self.rotInputShaper(self.drivingController.getRightX()) * self.maxAngularRate
