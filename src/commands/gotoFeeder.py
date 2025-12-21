@@ -23,8 +23,8 @@ class GoToFeeder(Command):
 
     def isFinished(self):
         # Code to check if the command is finished
-        return True
+        return self.followPathCommand.isFinished()
 
     def end(self, interrupted):
         # Code to end the command
-        pass
+        self.followPathCommand.cancel()
