@@ -85,7 +85,7 @@ Branches are for pulling a copy of the actual robot code and changing it without
 
 1. Make a branch off of an existing branch. This is usually the "main" branch.
 2. Add changes to the branch you have just created. This is where you will program, test, and push code.
-3. Merge the one you just created into the original branch to append your changes to it. This will add your changes to the "main" branch.
+3. Merge the one you just created into the original branch via a pull request to append your changes to it. This will add your changes to the "main" branch.
 4. Remove the branch that you have created to not clutter the branches. This ensures that the menu containing the branches isn't filled with 100 branches.
 
 ### Commits
