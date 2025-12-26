@@ -61,6 +61,7 @@ class RobotContainer:
         self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
+        self.sysIdController: CommandXboxController
         self.driveInputScalar: float
 
         self.initSubsystems()
@@ -127,7 +128,21 @@ class RobotContainer:
     def initControls(self):
         """Instantiate the robot's control objects"""
         
-        self.drivingController = CommandXboxController(0)
+        try:
+            self.drivingController = CommandXboxController(0)
+        except:
+            pass
+
+        try:
+            self.operatorController = CommandJoystick(1)
+        except:
+            pass
+
+        try:
+            self.sysIdController = CommandXboxController(2)
+        except:
+            pass
+
         self.driveInputScalar = 1.0
 
         # so i can test the driving without the program errroring out
@@ -216,6 +231,45 @@ class RobotContainer:
         self.drivingController.leftBumper().onTrue(
             GoToFeeder(self.drivetrain)
         )
+
+        ### SysID Routine Button Bindings ###
+        self.sysIdController.povUp().onTrue(
+            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
+        ).whileTrue(
+            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
+        )
+
+        self.sysIdController.povDown().onTrue(
+            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
+        ).whileTrue(
+            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
+        )
+
+        self.sysIdController.povLeft().onTrue(
+            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
+        ).whileTrue(
+            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
+        )
+
+        self.sysIdController.povRight().onTrue(
+            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
+        ).whileTrue(
+            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
+        )
+
+        self.sysIdController.leftBumper().onTrue(
+            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
+        ).whileTrue(
+            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
+        )
+
+        self.sysIdController.rightBumper().onTrue(
+            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
+        ).whileTrue(
+            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
+        )
+
+        ### End SysID Routine Button Bindings ###
 
         self.drivetrain.register_telemetry(
             lambda state: self._logger.telemeterize(state)

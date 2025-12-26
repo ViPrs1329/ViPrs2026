@@ -238,6 +238,17 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         if utils.is_simulation():
             self._start_sim_thread()
         self._configure_auto_builder()
+    
+    def set_sys_id_routine(self, routine: SysIdRoutine | None = None) -> None:
+        """
+        Sets the SysId routine to apply during SysId tests.
+
+        :param routine: The routine to apply
+        :type routine:  SysIdRoutine
+        """
+
+        # If no routine is specified, default to translation routine
+        self._sys_id_routine_to_apply = routine if routine is not None else self._sys_id_routine_translation
 
     def _configure_auto_builder(self):
         config = RobotConfig.fromGUISettings()
@@ -277,7 +288,7 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         """
         return self.run(lambda: self.set_control(request()))
 
-    def sys_id_quasistatic(self, direction: SysIdRoutine.Direction) -> Command:
+    def sys_id_quasistatic(self, direction: SysIdRoutine.Direction, *requirements: Subsystem) -> Command:
         """
         Runs the SysId Quasistatic test in the given direction for the routine
         specified by self.sys_id_routine_to_apply.
@@ -287,9 +298,11 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         :returns: Command to run
         :rtype: Command
         """
-        return self._sys_id_routine_to_apply.quasistatic(direction)
+        quasistatic_command: Command = self._sys_id_routine_to_apply.quasistatic(direction)
+        quasistatic_command.addRequirements(*requirements)
+        return quasistatic_command
 
-    def sys_id_dynamic(self, direction: SysIdRoutine.Direction) -> Command:
+    def sys_id_dynamic(self, direction: SysIdRoutine.Direction, *requirements: Subsystem) -> Command:
         """
         Runs the SysId Dynamic test in the given direction for the routine
         specified by self.sys_id_routine_to_apply.
@@ -299,8 +312,10 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
         :returns: Command to run
         :rtype: Command
         """
-        return self._sys_id_routine_to_apply.dynamic(direction)
-
+        dynamic_command: Command = self._sys_id_routine_to_apply.dynamic(direction)
+        dynamic_command.addRequirements(*requirements)
+        return dynamic_command
+    
     def periodic(self):
         # Periodically try to apply the operator perspective.
         # If we haven't applied the operator perspective before, then we should apply it regardless of DS state.

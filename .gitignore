@@ -9,3 +9,27 @@ src/ctre_sim/
 # Ignore loose log files and simulation UI layouts
 *.wpilog
 *.hoot
+
+# General MacOS system files
+.DS_Store # Folder view configuration files created by Finder
+__MACOSX/ # Resource forks created when zipping on macOS
+
+# Thumbnails
+._* # Temporary files created for file previews/thumbnails
+
+# Spotlight files (Indexing)
+.Spotlight-V100
+.fseventsd
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
