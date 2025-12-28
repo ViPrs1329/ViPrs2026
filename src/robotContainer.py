@@ -183,91 +183,154 @@ class RobotContainer:
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
                
-        self.drivetrain.setDefaultCommand(
-            self.drivetrain.apply_request(
-                lambda: (
-                    self.drive.with_velocity_x(
-                       -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[0] * self.maxSpeed * self.driveInputScalar
-                       # -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
-                    ) # Drive forward with negative Y (forward)
-                    .with_velocity_y(
-                        -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[1] * self.maxSpeed * self.driveInputScalar
-                        # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
-                    ) # DRive left with negative X (left)
-                    .with_rotational_rate(
-                        -self.rotInputShaper(self.drivingController.getRightX()) * self.maxAngularRate
-                    ) # Drive counterclockwise with negative X (left)
+        ### Driving Commands ###
+
+        try:
+            self.drivetrain.setDefaultCommand(
+                self.drivetrain.apply_request(
+                    lambda: (
+                        self.drive.with_velocity_x(
+                        -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[0] * self.maxSpeed * self.driveInputScalar
+                        # -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
+                        ) # Drive forward with negative Y (forward)
+                        .with_velocity_y(
+                            -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[1] * self.maxSpeed * self.driveInputScalar
+                            # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
+                        ) # DRive left with negative X (left)
+                        .with_rotational_rate(
+                            -self.rotInputShaper(self.drivingController.getRightX()) * self.maxAngularRate
+                        ) # Drive counterclockwise with negative X (left)
+                    )
                 )
             )
-        )
 
-        # Idle while the robot is diabled. This ensures the configured
-        # neutral mode is applied to the drive motors while diabled.
-        idle = swerve.requests.Idle()
-        Trigger(DriverStation.isDisabled).whileTrue(
-            self.drivetrain.apply_request(lambda: idle).ignoringDisable(True)
-        )
+            # Idle while the robot is diabled. This ensures the configured
+            # neutral mode is applied to the drive motors while diabled.
+            idle = swerve.requests.Idle()
+            Trigger(DriverStation.isDisabled).whileTrue(
+                self.drivetrain.apply_request(lambda: idle).ignoringDisable(True)
+            )
 
-        self.drivingController.a().whileTrue(self.drivetrain.apply_request(lambda: self.brake))
-        self.drivingController.b().whileTrue(
-            self.drivetrain.apply_request(
-                lambda: self.point.with_module_direction(
-                    Rotation2d(-self.drivingController.getLeftY(), -self.drivingController.getLeftX())
+            self.drivingController.a().whileTrue(self.drivetrain.apply_request(lambda: self.brake))
+            self.drivingController.b().whileTrue(
+                self.drivetrain.apply_request(
+                    lambda: self.point.with_module_direction(
+                        Rotation2d(-self.drivingController.getLeftY(), -self.drivingController.getLeftX())
+                    )
                 )
             )
-        )
 
-        # Bind the reset gyro command to the X button on the controller
-        self.drivingController.x().onTrue(
-            self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
-        )
+            # Bind the reset gyro command to the X button on the controller
+            self.drivingController.x().onTrue(
+                self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
+            )
 
-        self.drivingController.rightTrigger().onTrue(
-            InstantCommand(self.goSlow)
-        ).onFalse(
-            InstantCommand(self.goFast)
-        )
+            self.drivingController.rightTrigger().onTrue(
+                InstantCommand(self.goSlow)
+            ).onFalse(
+                InstantCommand(self.goFast)
+            )
 
-        self.drivingController.leftBumper().onTrue(
-            GoToFeeder(self.drivetrain)
-        )
+            self.drivingController.leftBumper().onTrue(
+                GoToFeeder(self.drivetrain)
+            )
+
+        except:
+            pass
+
+        ### End Driving Commands ###
+
+        ### Operator Commands ###
+        
+        try:
+            pass
+
+        except:
+            pass
+
+        ### End Operator Commands ###
 
         ### SysID Routine Button Bindings ###
-        self.sysIdController.povUp().onTrue(
-            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
-        ).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
-        )
 
-        self.sysIdController.povDown().onTrue(
-            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
-        ).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
-        )
+        try:
 
-        self.sysIdController.povLeft().onTrue(
-            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
-        ).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
-        )
+            # translation tests
+            self.sysIdController.povUp().onTrue(
+                InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
+            ).whileTrue(
+                self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
+            )
 
-        self.sysIdController.povRight().onTrue(
-            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
-        ).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
-        )
+            self.sysIdController.povDown().onTrue(
+                InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
+            ).whileTrue(
+                self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse, self.drivetrain)
+            )
 
-        self.sysIdController.leftBumper().onTrue(
-            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
-        ).whileTrue(
-            self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
-        )
+            self.sysIdController.povLeft().onTrue(
+                InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
+            ).whileTrue(
+                self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse, self.drivetrain)
+            )
 
-        self.sysIdController.rightBumper().onTrue(
-            InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
-        ).whileTrue(
-            self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
-        )
+            self.sysIdController.povRight().onTrue(
+                InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_translation), self.drivetrain)
+            ).whileTrue(
+                self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
+            )
+
+            # # steer tests
+            # self.sysIdController.povUp().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
+            # )
+
+            # self.sysIdController.povDown().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse, self.drivetrain)
+            # )
+
+            # self.sysIdController.povLeft().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse, self.drivetrain)
+            # )
+
+            # self.sysIdController.povRight().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_steer), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
+            # )
+        
+            # # rotation tests
+            # self.sysIdController.povUp().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kForward, self.drivetrain)
+            # )
+
+            # self.sysIdController.povDown().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_quasistatic(SysIdRoutine.Direction.kReverse, self.drivetrain)
+            # )
+
+            # self.sysIdController.povLeft().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kReverse, self.drivetrain)
+            # )
+
+            # self.sysIdController.povRight().onTrue(
+            #     InstantCommand(lambda: self.drivetrain.set_sys_id_routine(self.drivetrain._sys_id_routine_rotation), self.drivetrain)
+            # ).whileTrue(
+            #     self.drivetrain.sys_id_dynamic(SysIdRoutine.Direction.kForward, self.drivetrain)
+            # )
+
+        except:
+            pass
 
         ### End SysID Routine Button Bindings ###
 
