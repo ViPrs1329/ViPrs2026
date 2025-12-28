@@ -85,9 +85,9 @@ class SubsystemWrapper(Subsystem):
         """Called periodically, use for updating NetworkTables"""
         self.updateNetworkTables()
 
-        visionRobotPose: Pose2d | None = self.limelight.getRobotPositionFieldRelative()
+        visionRobotPose, stdev = self.limelight.getRobotPositionFieldRelative()
         if visionRobotPose is not None:
-            self.drivetrain.add_vision_measurement(visionRobotPose, Timer.getFPGATimestamp(), Consts.Drive.Consts.visionMeasurementStdDevs)
+            self.drivetrain.add_vision_measurement(visionRobotPose, Timer.getFPGATimestamp(), stdev)
 
     def resetSubsystems(self) -> None:
         """
