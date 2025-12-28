@@ -1,8 +1,8 @@
 This is the code for the 2026 FRC Robotics competition for the ViPrs
 
-# Coding Practices
+# Our Coding Practices
 
-Let's use a standard way of programming to avoid confusion
+Let's use a standard way of programming to avoid confusion. Our way of writing python is a bit different than what people usually use.
 
 ### 1. Camel Case
 
@@ -79,7 +79,7 @@ Here at ViPrs, we use a software called Github. It is a place where we can store
 
 We use Github as a place to store the code for the robot since it provides safe storage (free from possible corruption), version management, and easy accessibility.
 
-### How to Use Branches
+### Branches
 
 Branches are for pulling a copy of the actual robot code and changing it without messing with the real robot code. The actual code is stored on the "main" branch, and variations of it are stored in other branches. The way that we will use branches is by following these steps: 
 
@@ -88,9 +88,21 @@ Branches are for pulling a copy of the actual robot code and changing it without
 3. Merge the one you just created into the original branch via a pull request to append your changes to it. This will add your changes to the "main" branch.
 4. Remove the branch that you have created to not clutter the branches. This ensures that the menu containing the branches isn't filled with 100 branches.
 
+### Issues
+
+Issues is a place to put ongoing issues or improvements. It tags all issues with a unique id number so we can track them easier. They also provide a place to chat about a specific issue inside so the main chats don't get cluttered. From inside an issue, you can create a branch and link a pull request. 
+
+### Pull Requests
+
+A Pull Request is a way to merge a branch into another branch. It provides a chat (like issues) and it also shows conflicts between the two branches if there are any. If there arn't any conflicts, it will gracefully merge the two branches together as well as keeping a paper trail of everything that happened.
+
 ### Commits
 
-Every time you commit some code to a branch when editing an existing branch or creating a new branch, Github will automatically creates a version of the code and stores it so you can either revert to a previous version if you messed it up, or go back and view what was there before.
+Every time you commit some code to a branch when editing an existing branch or creating a new branch, Github will automatically creates a version of the code and stores it so you can either revert to a previous version if you messed it up, or go back and view what was there before. Upon committing code, there will be a place to enter a commit message as well as a description. A description is optional but recommended. The commit message should be a short blurb (less than 50 characters) about what this commit does.
+
+### Discussions
+
+The Discussions tab is like Microsoft Teams except it is built into Github. We will use it for anything that doesn't fit in an issue or pull request.
 
 ---
 
