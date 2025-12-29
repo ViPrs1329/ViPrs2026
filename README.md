@@ -1,4 +1,4 @@
-This is the code for the 2026 FRC Robotics competition for the ViPrs
+This is the code for the 2026 FRC Robotics competition, Rebuilt, of the ViPrs
 
 # Our Coding Practices
 
