@@ -15,12 +15,12 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        .with_k_p(10)
-        .with_k_i(0)
+        .with_k_p(50.0)
+        .with_k_i(0.0)
         .with_k_d(0.0)
-        .with_k_s(0.1)
-        .with_k_v(2.66)
-        .with_k_a(0)
+        .with_k_s(0.0)
+        .with_k_v(0.0)
+        .with_k_a(0.0)
         .with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
     )
     # When using closed-loop control, the drive motor uses the control
@@ -136,8 +136,8 @@ class TunerConstants:
     _front_left_steer_motor_inverted = True
     _front_left_encoder_inverted = False
 
-    _front_left_x_pos: units.meter = inchesToMeters(11.25)
-    _front_left_y_pos: units.meter = inchesToMeters(11.25)
+    _front_left_x_pos: units.meter = inchesToMeters(11.375)
+    _front_left_y_pos: units.meter = inchesToMeters(11.375)
 
     # Front Right
     _front_right_drive_motor_id = 4
@@ -147,8 +147,8 @@ class TunerConstants:
     _front_right_steer_motor_inverted = True
     _front_right_encoder_inverted = False
 
-    _front_right_x_pos: units.meter = inchesToMeters(11.25)
-    _front_right_y_pos: units.meter = inchesToMeters(-11.25)
+    _front_right_x_pos: units.meter = inchesToMeters(11.375)
+    _front_right_y_pos: units.meter = inchesToMeters(-11.375)
 
     # Back Left
     _back_left_drive_motor_id = 7
@@ -158,8 +158,8 @@ class TunerConstants:
     _back_left_steer_motor_inverted = True
     _back_left_encoder_inverted = False
 
-    _back_left_x_pos: units.meter = inchesToMeters(-11.25)
-    _back_left_y_pos: units.meter = inchesToMeters(11.25)
+    _back_left_x_pos: units.meter = inchesToMeters(-11.375)
+    _back_left_y_pos: units.meter = inchesToMeters(11.375)
 
     # Back Right
     _back_right_drive_motor_id = 10
@@ -169,8 +169,8 @@ class TunerConstants:
     _back_right_steer_motor_inverted = True
     _back_right_encoder_inverted = False
 
-    _back_right_x_pos: units.meter = inchesToMeters(-11.25)
-    _back_right_y_pos: units.meter = inchesToMeters(-11.25)
+    _back_right_x_pos: units.meter = inchesToMeters(-11.375)
+    _back_right_y_pos: units.meter = inchesToMeters(-11.375)
 
 
     front_left = _constants_creator.create_module_constants(
