@@ -8,6 +8,8 @@ from wpimath.geometry import Transform2d
 
 from constants import Limelight
 
+from math import sqrt
+
 class LimelightSubsystem(Subsystem):
     def __init__(self) -> None:
         super().__init__()
@@ -24,7 +26,7 @@ class LimelightSubsystem(Subsystem):
         """
         return any(table.getNumber("tv", 0) == 1 for table in self.tables)
     
-    def getRobotPositionFieldRelative(self) -> Pose2d | None:
+    def getRobotPositionFieldRelative(self) -> tuple[Pose2d | None, tuple[float, float, float] | None]:
         """
         Get the robot's position relative to the field.
 
@@ -33,7 +35,7 @@ class LimelightSubsystem(Subsystem):
         If no targets are visible, it returns None.
         """
         if not self.canSeeTarget():
-            return None
+            return None, None
         
         robotPose: Pose2d = Pose2d(0, 0, Rotation2d(0))
 
@@ -53,9 +55,16 @@ class LimelightSubsystem(Subsystem):
         
         if totalWeight > 0:
             robotPose /= totalWeight
-            return robotPose
+
+            # Calculate the combined standard deviation based on individual limelight measurements
+            stdev: tuple[float, float, float] = (
+                Limelight.Consts.standardDeviationRef[0] / sqrt(Limelight.Consts.targetAreaRef / totalWeight),
+                Limelight.Consts.standardDeviationRef[1] / sqrt(Limelight.Consts.targetAreaRef / totalWeight),
+                Limelight.Consts.standardDeviationRef[2] / sqrt(Limelight.Consts.targetAreaRef / totalWeight)
+            )
+            return robotPose, stdev
         else:
-            return None
+            return None, None
     
     def getRobotPositionRelativeToTarget(self, target: int) -> Pose2d | None:
         """
