@@ -62,6 +62,11 @@ class TunerConstants:
         # Swerve azimuth does not require much torque output, so we can set a relatively low
         # stator current limit to help avoid brownouts without impacting performance.
         .with_stator_current_limit(60).with_stator_current_limit_enable(True)
+    ).with_motion_magic(
+        configs.MotionMagicConfigs()
+        .with_motion_magic_cruise_velocity(4) # units: rotations per second
+        .with_motion_magic_acceleration(30)    # units: rotations per second squared
+        .with_motion_magic_jerk(500)          # units: rotations per second cubed
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()
     # Configs for the Pigeon 2; leave this None to skip applying Pigeon 2 configs
