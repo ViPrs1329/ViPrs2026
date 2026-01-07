@@ -128,7 +128,7 @@ class RobotContainer:
         """Instantiate the robot's control objects"""
         
         self.drivingController = CommandXboxController(0)
-        self.driveInputScalar = 1.0
+        self.driveInputScalar = 0.5
 
         # so i can test the driving without the program errroring out
         # self.operatorController = CommandJoystick(1)
@@ -161,6 +161,9 @@ class RobotContainer:
     
     def goSlow(self):
         self.driveInputScalar = 0.1
+        
+    def goMedium(self):
+        self.driveInputScalar = 0.5
 
     def goFast(self):
         self.driveInputScalar = 1.0
@@ -210,7 +213,13 @@ class RobotContainer:
         self.drivingController.rightTrigger().onTrue(
             InstantCommand(self.goSlow)
         ).onFalse(
+            InstantCommand(self.goMedium)
+        )
+
+        self.drivingController.leftTrigger().onTrue(
             InstantCommand(self.goFast)
+        ).onFalse(
+            InstantCommand(self.goMedium)
         )
 
         self.drivingController.leftBumper().onTrue(
