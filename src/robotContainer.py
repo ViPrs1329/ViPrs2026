@@ -46,6 +46,7 @@ from generated.tuner_constants_20251205 import TunerConstants
 from telemetry import Telemetry
 
 from numpy import sqrt
+from typing import Callable
 
 class RobotContainer:
     """
@@ -172,14 +173,16 @@ class RobotContainer:
     def updateFilteredInputs(self, targetInputs: list[float]):
         """Updates the filtered speeds using a simple low-pass filter."""
         alpha: float = 0.5  # Smoothing factor between 0 and 1
+        current = targetInputs
+        print(current)
         self.filteredInputs[0] = (
-            alpha * targetInputs[0] + (1 - alpha) * self.filteredInputs[0]
+            alpha * current[0] + (1 - alpha) * self.filteredInputs[0]
         )
         self.filteredInputs[1] = (
-            alpha * targetInputs[1] + (1 - alpha) * self.filteredInputs[1]
+            alpha * current[1] + (1 - alpha) * self.filteredInputs[1]
         )
         self.filteredInputs[2] = (
-            alpha * targetInputs[2] + (1 - alpha) * self.filteredInputs[2]
+            alpha * current[2] + (1 - alpha) * self.filteredInputs[2]
         )
 
     def configureButtonBindings(self):
@@ -208,14 +211,6 @@ class RobotContainer:
         idle = swerve.requests.Idle()
         Trigger(DriverStation.isDisabled).whileTrue(
             self.drivetrain.apply_request(lambda: idle).ignoringDisable(True)
-        ).whileFalse(
-            InstantCommand(
-                lambda: self.updateFilteredInputs([
-                    self.drivingController.getLeftX(),
-                    self.drivingController.getLeftY(),
-                    self.drivingController.getRightX()
-                ])
-            )
         )
 
         self.drivingController.a().whileTrue(self.drivetrain.apply_request(lambda: self.brake))
