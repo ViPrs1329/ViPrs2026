@@ -62,6 +62,7 @@ class RobotContainer:
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
         self.driveInputScalar: float
+        self.filteredInputs: list[float] = [0.0, 0.0, 0.0]
 
         self.initSubsystems()
         self.initControls()
