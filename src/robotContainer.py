@@ -200,14 +200,6 @@ class RobotContainer:
                         self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate
                     ) # Drive counterclockwise with negative X (left)
                 )
-            ).andThen(
-                InstantCommand(
-                    lambda: self.updateFilteredInputs([
-                        self.drivingController.getLeftX(),
-                        self.drivingController.getLeftY(),
-                        self.drivingController.getRightX()
-                    ])
-                )
             )
         )
 
@@ -216,6 +208,14 @@ class RobotContainer:
         idle = swerve.requests.Idle()
         Trigger(DriverStation.isDisabled).whileTrue(
             self.drivetrain.apply_request(lambda: idle).ignoringDisable(True)
+        ).whileFalse(
+            InstantCommand(
+                lambda: self.updateFilteredInputs([
+                    self.drivingController.getLeftX(),
+                    self.drivingController.getLeftY(),
+                    self.drivingController.getRightX()
+                ])
+            )
         )
 
         self.drivingController.a().whileTrue(self.drivetrain.apply_request(lambda: self.brake))
