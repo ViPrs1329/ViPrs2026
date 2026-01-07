@@ -60,7 +60,11 @@ class MyRobot(commands2.TimedCommandRobot):
         
     def teleopPeriodic(self):
         """This function is called periodically during teleoperated mode."""
-        pass
+        self.robotContainer.updateFilteredInputs([
+            self.robotContainer.drivingController.getLeftX(),
+            self.robotContainer.drivingController.getLeftY(),
+            self.robotContainer.drivingController.getRightX()
+        ])
         
     def testInit(self): 
         """This function is called once each time the robot enters test mode."""
