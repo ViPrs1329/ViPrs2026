@@ -15,7 +15,8 @@ class ClimbingSubsystem(Subsystem):
         
         super().__init__()
 
-        self.climbingMotor: hardware.TalonFX = hardware.TalonFX(Climber.Consts.motorId)
+        self.climbingMotorLeft: hardware.TalonFX = hardware.TalonFX(Climber.Consts.motorId)
+        self.climbingMotorRight: hardware.TalonFX = hardware.TalonFX(Climber.Consts.motorId)
 
         climberConfigs: configs.TalonFXConfiguration = configs.TalonFXConfiguration()
         # slot0 for pulling the robot up
@@ -23,11 +24,16 @@ class ClimbingSubsystem(Subsystem):
         climberConfigs.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_g(0).with_gravity_type(signals.spn_enums.GravityTypeValue.ELEVATOR_STATIC)
         climberConfigs.slot1.with_k_p(1).with_k_i(0).with_k_d(0)
         
-        self.climbingMotor.setNeutralMode(signals.NeutralModeValue.BRAKE)
+        self.climbingMotorLeft.setNeutralMode(signals.NeutralModeValue.BRAKE)
+        self.climbingMotorRight.setNeutralMode(signals.NeutralModeValue.BRAKE)
 
-        self.climbingMotor.configurator.apply(climberConfigs)
 
-        self.climbingMotor.set_position(0.0)
+        self.climbingMotorLeft.configurator.apply(climberConfigs)
+        self.climbingMotorRight.configurator.apply(climberConfigs)
+
+
+        self.climbingMotorLeft.set_position(0.0)
+        self.climbingMotorRight.set_position(0.0)
 
         self.targetPosition: float = 0.0
         self.currentSlot: int = 1
@@ -37,4 +43,5 @@ class ClimbingSubsystem(Subsystem):
 
     def periodic(self) -> None:
         positionRequest = controls.PositionTorqueCurrentFOC(position=self.targetPosition, slot=self.currentSlot)
-        self.climbingMotor.set_control(positionRequest)
+        self.climbingMotorLeft.set_control(positionRequest)
+        self.climbingMotorRight.set_control(positionRequest)
