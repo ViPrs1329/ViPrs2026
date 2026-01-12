@@ -35,6 +35,13 @@ class Limelight:
     class States:
         pass
 
+class Climber:
+    class Consts:
+        motorId: int = 100  # Example motor ID for the climbing mechanism
+
+    class States:
+        pass
+
 class FNS:
 
     class Consts:
