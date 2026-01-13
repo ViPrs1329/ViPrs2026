@@ -128,6 +128,7 @@ class RobotContainer:
         #TODO register other subsystems as needed
         CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
         CommandScheduler.getInstance().registerSubsystem(self.limelight)
+        CommandScheduler.getInstance().registerSubsystem(self.climber)
         CommandScheduler.getInstance().registerSubsystem(self.subsystemWrapper)
         
     def initControls(self):
