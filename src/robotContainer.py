@@ -37,6 +37,7 @@ from phoenix6 import swerve
 
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
+from subsystems.IntakeSubsystem import IntakeSubsystem
 
 from controlsSubsystemWrapper import SubsystemWrapper
 
@@ -59,6 +60,7 @@ class RobotContainer:
         self.autoChooser: SendableChooser
         self.drivetrain: CommandSwerveDrivetrain
         self.limelight: LimelightSubsystem
+        self.intake: IntakeSubsystem
         self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
@@ -110,13 +112,15 @@ class RobotContainer:
         # self.drivetrain = DriveSubsystem(self.fns.getOdometry)
         self.drivetrain = TunerConstants.create_drivetrain()
         self.limelight = LimelightSubsystem()
+        self.intake = IntakeSubsystem()
         
         #TODO add other subsystems as needed
 
         # create a wrapper for the subsystems
         self.subsystemWrapper = SubsystemWrapper(
             self.drivetrain, 
-            self.limelight
+            self.limelight,
+            self.intake
             #TODO add other subsystems as needed
         )
 
@@ -124,6 +128,7 @@ class RobotContainer:
         #TODO register other subsystems as needed
         CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
         CommandScheduler.getInstance().registerSubsystem(self.limelight)
+        CommandScheduler.getInstance().registerSubsystem(self.intake)
         CommandScheduler.getInstance().registerSubsystem(self.subsystemWrapper)
         
     def initControls(self):
