@@ -1,6 +1,5 @@
 import time
 import wpilib
-import rev
 import commands2
 from robotContainer import RobotContainer
 
