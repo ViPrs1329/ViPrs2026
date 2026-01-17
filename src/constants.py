@@ -32,6 +32,28 @@ class Limelight:
         #TODO update these names to match the limelights on the robot
         tableNames: list[str] = ["limelight-lside", "limelight-rside"]
 
+        # the measured standard deviation of a single limelight at a known reference area
+        standardDeviationRef: tuple[float, float, float] = (0.05, 0.05, 0.01) # meters, meters, radians
+
+        # the reference target area at which the standard deviation was measured
+        targetAreaRef: float = 0.05 # percentage
+
+    class States:
+        pass
+
+class Climber:
+    class Consts:
+        motorId: int = 100  # Example motor ID for the climbing mechanism
+
+    class States:
+        pass
+
+class Shooter:
+    class Consts:
+        turretId: int = 1
+        anglingId: int = 1
+        shootingId: int = 1
+
     class States:
         pass
 
@@ -45,3 +67,4 @@ class FNS:
 
     class States:
         pass
+ 
