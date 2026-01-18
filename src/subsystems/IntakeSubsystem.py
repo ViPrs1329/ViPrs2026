@@ -18,9 +18,14 @@ class IntakeSubsystem(Subsystem):
 
         armConfig = configs.TalonFXConfiguration()
         armConfig.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_gravity_type(signals.GravityTypeValue.ARM_COSINE).with_gravity_arm_position_offset(0) # the arm position offset will be calculated by the design team
+        armConfig.with_current_limits(
+            configs.CurrentLimitsConfigs()
+            .with_stator_current_limit(60)
+            .with_supply_current_limit(30)
+        )
         self.intakeMotor: hardware.TalonFX = hardware.TalonFX(Intake.Consts.intakeCANId)
         self.armMotor: hardware.TalonFX = hardware.TalonFX(Intake.Consts.armCANId)
-        self.intakeMotorSpeed: controls.VelocityVoltage = controls.VelocityVoltage(0).with_enable_foc(True).with_slot(0)
+        self.intakeMotorSpeed: controls.VelocityTorqueCurrentFOC = controls.VelocityTorqueCurrentFOC(0).with_slot(0)
         self.armMotorPositioning: controls.PositionVoltage = controls.PositionVoltage(0).with_enable_foc(True).with_slot(0)
 
         self.armMotor.setNeutralMode(signals.NeutralModeValue.BRAKE)
