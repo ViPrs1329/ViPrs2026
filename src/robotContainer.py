@@ -43,7 +43,7 @@ from controlsSubsystemWrapper import SubsystemWrapper
 
 from commands.gotoFeeder import GoToFeeder
 
-from generated.tuner_constants_20251205 import TunerConstants
+from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
 
 from numpy import sqrt
