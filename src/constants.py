@@ -50,9 +50,9 @@ class Climber:
 
 class Shooter:
     class Consts:
-        turretId: int = 1
-        anglingId: int = 1
-        shootingId: int = 1
+        turretId: int = 100
+        anglingId: int = 100
+        shootingId: int = 100
 
     class States:
         pass
