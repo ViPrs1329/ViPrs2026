@@ -1,6 +1,7 @@
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
 from subsystems.shooterSubsystem import ShooterSubsystem
+from subsystems.climberSubsystem import ClimbingSubsystem
 import constants as Consts
 from commands2 import InstantCommand
 from commands2 import PrintCommand
@@ -18,7 +19,7 @@ from wpimath.geometry import Pose2d
 from wpilib import Timer
 
 class SubsystemWrapper(Subsystem):
-    def __init__(self, drivetrain: CommandSwerveDrivetrain, limelight: LimelightSubsystem, shooter: ShooterSubsystem):
+    def __init__(self, drivetrain: CommandSwerveDrivetrain, limelight: LimelightSubsystem, shooter: ShooterSubsystem, climber: ClimbingSubsystem):
         """
         Wrapper class that coordinates multiple subsystems to perform complex robot actions.
 
@@ -30,6 +31,7 @@ class SubsystemWrapper(Subsystem):
         self.drivetrain: CommandSwerveDrivetrain
         self.limelight: LimelightSubsystem
         self.shooter: ShooterSubsystem
+        self.climber: ClimbingSubsystem
         self.resetBeforeTeleopCommand: SequentialCommandGroup
         self.resetSubsystemsCommand: SequentialCommandGroup
         self.nt: NetworkTableInstance
@@ -40,6 +42,7 @@ class SubsystemWrapper(Subsystem):
         self.drivetrain = drivetrain
         self.limelight = limelight
         self.shooter = shooter
+        self.climber = climber
 
         self.resetBeforeTeleopCommand = SequentialCommandGroup(
             # Safety first - stop all motion
@@ -88,9 +91,9 @@ class SubsystemWrapper(Subsystem):
         """Called periodically, use for updating NetworkTables"""
         self.updateNetworkTables()
 
-        visionRobotPose: Pose2d | None = self.limelight.getRobotPositionFieldRelative()
+        visionRobotPose, stdev = self.limelight.getRobotPositionFieldRelative()
         if visionRobotPose is not None:
-            self.drivetrain.add_vision_measurement(visionRobotPose, Timer.getFPGATimestamp(), Consts.Drive.Consts.visionMeasurementStdDevs)
+            self.drivetrain.add_vision_measurement(visionRobotPose, Timer.getFPGATimestamp(), stdev)
 
     def resetSubsystems(self) -> None:
         """

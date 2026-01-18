@@ -38,12 +38,13 @@ from phoenix6 import swerve
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
 from subsystems.shooterSubsystem import ShooterSubsystem
+from subsystems.climberSubsystem import ClimbingSubsystem
 
 from controlsSubsystemWrapper import SubsystemWrapper
 
 from commands.gotoFeeder import GoToFeeder
 
-from generated.tuner_constants_20251205 import TunerConstants
+from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
 
 from numpy import sqrt
@@ -61,6 +62,7 @@ class RobotContainer:
         self.drivetrain: CommandSwerveDrivetrain
         self.limelight: LimelightSubsystem
         self.shooter: ShooterSubsystem
+        self.climber: ClimbingSubsystem
         self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
@@ -113,6 +115,7 @@ class RobotContainer:
         self.drivetrain = TunerConstants.create_drivetrain()
         self.limelight = LimelightSubsystem()
         self.shooter = ShooterSubsystem()
+        self.climber = ClimbingSubsystem()
         
         #TODO add other subsystems as needed
 
@@ -121,6 +124,7 @@ class RobotContainer:
             self.drivetrain, 
             self.limelight, 
             self.shooter
+            self.climber
             #TODO add other subsystems as needed
         )
 
@@ -129,6 +133,7 @@ class RobotContainer:
         CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
         CommandScheduler.getInstance().registerSubsystem(self.limelight)
         CommandScheduler.getInstance().registerSubsystem(self.shooter)
+        CommandScheduler.getInstance().registerSubsystem(self.climber)
         CommandScheduler.getInstance().registerSubsystem(self.subsystemWrapper)
         
     def initControls(self):
