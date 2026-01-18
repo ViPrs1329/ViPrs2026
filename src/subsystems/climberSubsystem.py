@@ -19,6 +19,11 @@ class ClimbingSubsystem(Subsystem):
         self.climbingMotorRight: hardware.TalonFX = hardware.TalonFX(Climber.Consts.motorId)
 
         climberConfigs: configs.TalonFXConfiguration = configs.TalonFXConfiguration()
+        climberConfigs.with_current_limits(
+            configs.CurrentLimitConfigs()
+            .with_stator_current_limit(80)
+            .with_supply_current_limit(30)
+        )
         # slot0 for pulling the robot up
         # slot1 for raising the climbing arm (there is no robot to lift so no feed forward)
         climberConfigs.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_g(0).with_gravity_type(signals.spn_enums.GravityTypeValue.ELEVATOR_STATIC)
