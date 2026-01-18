@@ -236,6 +236,9 @@ class TunerConstants:
         from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 
         return CommandSwerveDrivetrain(
+            hardware.TalonFX,
+            hardware.TalonFX,
+            hardware.CANcoder,
             cls.drivetrain_constants,
             [
                 cls.front_left,
