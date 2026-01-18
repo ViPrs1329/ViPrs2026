@@ -123,7 +123,7 @@ class RobotContainer:
         self.subsystemWrapper = SubsystemWrapper(
             self.drivetrain, 
             self.limelight, 
-            self.shooter
+            self.shooter,
             self.climber
             #TODO add other subsystems as needed
         )
