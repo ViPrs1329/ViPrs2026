@@ -20,9 +20,9 @@ class TunerConstants:
         configs.Slot0Configs()
         .with_k_p(100)
         .with_k_i(0)
-        .with_k_d(0.5)
-        .with_k_s(0.1)
-        .with_k_v(2.66)
+        .with_k_d(0)
+        .with_k_s(0)
+        .with_k_v(0)
         .with_k_a(0)
         .with_static_feedforward_sign(
             signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN
@@ -36,7 +36,7 @@ class TunerConstants:
         .with_k_i(0)
         .with_k_d(0)
         .with_k_s(0)
-        .with_k_v(0.124)
+        .with_k_v(0)
     )
 
     # The closed-loop output type to use for the steer motors;
@@ -89,8 +89,8 @@ class TunerConstants:
     _steer_gear_ratio = 21.428571428571427
     _wheel_radius: units.meter = inchesToMeters(2)
 
-    _invert_left_side = False
-    _invert_right_side = True
+    _invert_left_side = True
+    _invert_right_side = False
 
     _pigeon_id = 0
 
