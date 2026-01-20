@@ -20,7 +20,7 @@ class ClimbingSubsystem(Subsystem):
 
         climberConfigs: configs.TalonFXConfiguration = configs.TalonFXConfiguration()
         climberConfigs.with_current_limits(
-            configs.CurrentLimitConfigs()
+            configs.CurrentLimitsConfigs()
             .with_stator_current_limit(80)
             .with_supply_current_limit(30)
         )
