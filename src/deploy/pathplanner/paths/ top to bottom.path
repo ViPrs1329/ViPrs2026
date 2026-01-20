@@ -3,25 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1776867469879515,
-        "y": 0.5818433734939765
+        "x": 1.1560602409638552,
+        "y": 7.051048192771084
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.609365051002469,
-        "y": 0.707693988823865
+        "x": 1.1884028583154371,
+        "y": 6.803149110274095
       },
       "isLocked": false,
-      "linkedName": "Point D"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8663614457831326,
-        "y": 2.1226506024096388
+        "x": 1.6587349397590363,
+        "y": 5.062204819277108
       },
       "prevControl": {
-        "x": 1.6165403208680833,
-        "y": 2.1131951518027465
+        "x": 2.263138448982386,
+        "y": 5.092175241222067
+      },
+      "nextControl": {
+        "x": 0.33648192771084284,
+        "y": 4.996638554216868
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.5768915662650604,
+        "y": 3.630674698795181
+      },
+      "prevControl": {
+        "x": 0.47854216867469873,
+        "y": 4.69066265060241
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +58,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 30.191622960957634
+    "rotation": -179.1815445383114
   },
   "reversed": false,
-  "folder": "Alpha Paths 1",
+  "folder": "alpha path 7",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 102.99461679191648
+    "rotation": 178.91907581333925
   },
   "useDefaultConstraints": true
 }
