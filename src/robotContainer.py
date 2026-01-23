@@ -179,7 +179,6 @@ class RobotContainer:
         """Updates the filtered speeds using a simple low-pass filter."""
         alpha: float = 0.5  # Smoothing factor between 0 and 1
         current = targetInputs
-        print(current)
         self.filteredInputs[0] = (
             alpha * current[0] + (1 - alpha) * self.filteredInputs[0]
         )
@@ -205,7 +204,7 @@ class RobotContainer:
                         # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
-                        self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate
+                        -self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate
                     ) # Drive counterclockwise with negative X (left)
                 )
             )
