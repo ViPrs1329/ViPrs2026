@@ -48,6 +48,15 @@ class Climber:
     class States:
         pass
 
+class Shooter:
+    class Consts:
+        turretId: int = 100
+        anglingId: int = 100
+        shootingId: int = 100
+
+    class States:
+        pass
+
 class FNS:
 
     class Consts:
@@ -58,3 +67,4 @@ class FNS:
 
     class States:
         pass
+ 
