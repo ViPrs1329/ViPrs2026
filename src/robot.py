@@ -72,7 +72,6 @@ class MyRobot(commands2.TimedCommandRobot):
         
     def testPeriodic(self): 
         """This function is called periodically during test mode."""
-        print("testPeriodic()")
         pass
 
     def simulationInit(self):
@@ -81,7 +80,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def simulationPeriodic(self):
         """"This function is called periodically during the simulation mode"""
-        print("SimulationPeriodic()")
         
 
 
