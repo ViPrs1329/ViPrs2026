@@ -37,6 +37,7 @@ from phoenix6 import swerve
 
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
+from subsystems.IntakeSubsystem import IntakeSubsystem
 from subsystems.shooterSubsystem import ShooterSubsystem
 from subsystems.climberSubsystem import ClimbingSubsystem
 
@@ -61,6 +62,7 @@ class RobotContainer:
         self.autoChooser: SendableChooser
         self.drivetrain: CommandSwerveDrivetrain
         self.limelight: LimelightSubsystem
+        self.intake: IntakeSubsystem
         self.shooter: ShooterSubsystem
         self.climber: ClimbingSubsystem
         self.subsystemWrapper: SubsystemWrapper
@@ -114,6 +116,7 @@ class RobotContainer:
         # self.drivetrain = DriveSubsystem(self.fns.getOdometry)
         self.drivetrain = TunerConstants.create_drivetrain()
         self.limelight = LimelightSubsystem()
+        self.intake = IntakeSubsystem()
         self.shooter = ShooterSubsystem()
         self.climber = ClimbingSubsystem()
         
@@ -124,7 +127,8 @@ class RobotContainer:
             self.drivetrain, 
             self.limelight, 
             self.shooter,
-            self.climber
+            self.climber,
+            self.intake
             #TODO add other subsystems as needed
         )
 
@@ -132,6 +136,7 @@ class RobotContainer:
         #TODO register other subsystems as needed
         CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
         CommandScheduler.getInstance().registerSubsystem(self.limelight)
+        CommandScheduler.getInstance().registerSubsystem(self.intake)
         CommandScheduler.getInstance().registerSubsystem(self.shooter)
         CommandScheduler.getInstance().registerSubsystem(self.climber)
         CommandScheduler.getInstance().registerSubsystem(self.subsystemWrapper)

@@ -1,5 +1,6 @@
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.LimelightSubsystem import LimelightSubsystem
+from subsystems.IntakeSubsystem import IntakeSubsystem
 from subsystems.shooterSubsystem import ShooterSubsystem
 from subsystems.climberSubsystem import ClimbingSubsystem
 import constants as Consts
@@ -19,7 +20,7 @@ from wpimath.geometry import Pose2d
 from wpilib import Timer
 
 class SubsystemWrapper(Subsystem):
-    def __init__(self, drivetrain: CommandSwerveDrivetrain, limelight: LimelightSubsystem, shooter: ShooterSubsystem, climber: ClimbingSubsystem):
+    def __init__(self, drivetrain: CommandSwerveDrivetrain, limelight: LimelightSubsystem, shooter: ShooterSubsystem, climber: ClimbingSubsystem, intake: IntakeSubsystem):
         """
         Wrapper class that coordinates multiple subsystems to perform complex robot actions.
 
@@ -30,6 +31,7 @@ class SubsystemWrapper(Subsystem):
         #TODO add other subsystems as needed
         self.drivetrain: CommandSwerveDrivetrain
         self.limelight: LimelightSubsystem
+        self.intake: IntakeSubsystem
         self.shooter: ShooterSubsystem
         self.climber: ClimbingSubsystem
         self.resetBeforeTeleopCommand: SequentialCommandGroup
@@ -41,6 +43,7 @@ class SubsystemWrapper(Subsystem):
 
         self.drivetrain = drivetrain
         self.limelight = limelight
+        self.intake = intake
         self.shooter = shooter
         self.climber = climber
 

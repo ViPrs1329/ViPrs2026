@@ -57,6 +57,12 @@ class Shooter:
     class States:
         pass
 
+class Intake:
+
+    class Consts:
+        intakeCANId = 100
+        armCANId = 101
+
 class FNS:
 
     class Consts:
