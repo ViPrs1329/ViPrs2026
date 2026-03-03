@@ -7,37 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Starting to I3"
+            "pathName": "A to B"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "I3 to Feeder"
+            "pathName": "B to C"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Feeder to K3"
+            "pathName": "C to D"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "K3 to Feeder"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Feeder to L3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L3 to Feeder"
+            "pathName": "D to End"
           }
         }
       ]

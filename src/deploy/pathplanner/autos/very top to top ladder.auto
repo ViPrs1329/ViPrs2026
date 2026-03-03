@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1 meter"
+            "pathName": "very top to top"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "starting auto posibilities",
   "choreoAuto": false
 }
