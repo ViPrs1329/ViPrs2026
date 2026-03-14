@@ -141,45 +141,45 @@ class TunerConstants:
     _front_left_drive_motor_id = 1
     _front_left_steer_motor_id = 2
     _front_left_encoder_id = 3
-    _front_left_encoder_offset: units.rotation = -0.215087890625
+    _front_left_encoder_offset: units.rotation = 0.341064453125
     _front_left_steer_motor_inverted = True
     _front_left_encoder_inverted = False
 
-    _front_left_x_pos: units.meter = inchesToMeters(11.375)
-    _front_left_y_pos: units.meter = inchesToMeters(11.375)
+    _front_left_x_pos: units.meter = inchesToMeters(11)
+    _front_left_y_pos: units.meter = inchesToMeters(11)
 
     # Front Right
     _front_right_drive_motor_id = 4
     _front_right_steer_motor_id = 5
     _front_right_encoder_id = 6
-    _front_right_encoder_offset: units.rotation = 0.000732421875
+    _front_right_encoder_offset: units.rotation = 0.4306640625
     _front_right_steer_motor_inverted = True
     _front_right_encoder_inverted = False
 
-    _front_right_x_pos: units.meter = inchesToMeters(11.375)
-    _front_right_y_pos: units.meter = inchesToMeters(-11.375)
+    _front_right_x_pos: units.meter = inchesToMeters(11)
+    _front_right_y_pos: units.meter = inchesToMeters(-11)
 
     # Back Left
     _back_left_drive_motor_id = 7
     _back_left_steer_motor_id = 8
     _back_left_encoder_id = 9
-    _back_left_encoder_offset: units.rotation = -0.404296875
+    _back_left_encoder_offset: units.rotation = 0.03515625
     _back_left_steer_motor_inverted = True
     _back_left_encoder_inverted = False
 
-    _back_left_x_pos: units.meter = inchesToMeters(-11.375)
-    _back_left_y_pos: units.meter = inchesToMeters(11.375)
+    _back_left_x_pos: units.meter = inchesToMeters(-11)
+    _back_left_y_pos: units.meter = inchesToMeters(11)
 
     # Back Right
     _back_right_drive_motor_id = 10
     _back_right_steer_motor_id = 11
     _back_right_encoder_id = 12
-    _back_right_encoder_offset: units.rotation = 0.187744140625
+    _back_right_encoder_offset: units.rotation = -0.2421875
     _back_right_steer_motor_inverted = True
     _back_right_encoder_inverted = False
 
-    _back_right_x_pos: units.meter = inchesToMeters(-11.375)
-    _back_right_y_pos: units.meter = inchesToMeters(-11.375)
+    _back_right_x_pos: units.meter = inchesToMeters(-11)
+    _back_right_y_pos: units.meter = inchesToMeters(-11)
 
 
     front_left = _constants_creator.create_module_constants(
@@ -247,7 +247,6 @@ class TunerConstants:
                 cls.back_right,
             ],
         )
-
 
 class TunerSwerveDrivetrain(
     swerve.SwerveDrivetrain[hardware.TalonFX, hardware.TalonFX, hardware.CANcoder]
