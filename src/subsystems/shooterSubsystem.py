@@ -1,7 +1,7 @@
 from commands2 import Subsystem
 from wpilib import SmartDashboard
 
-from phoenix6.hardware import TalonFX
+from phoenix6.hardware import TalonFX, CANcoder
 from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC
 from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs
 
@@ -17,8 +17,9 @@ class ShooterSubsystem(Subsystem):
         super().__init__()
 
         self.turretMotor: TalonFX = TalonFX(Shooter.Consts.turretId)
-        self.hoodMotor: TalonFX = TalonFX(Shooter.Consts.anglingId)
+        self.hoodMotor: TalonFX = TalonFX(Shooter.Consts.hoodId)
         self.shootingMotor: TalonFX = TalonFX(Shooter.Consts.shootingId)
+        self.turretEncoder: CANcoder = CANcoder(Shooter.Consts.turretEncoderId)
 
         turretConfiguration: TalonFXConfiguration = TalonFXConfiguration()
         turretConfiguration.with_current_limits(
