@@ -1,0 +1,2 @@
+distance, targetRPM, hoodAngle, TOF, hoodRecoveryFactor, TOFRecoveryFactor, noShotRPM
+1,        1000,      0,         0.5, 0.0,                0.0,               700
