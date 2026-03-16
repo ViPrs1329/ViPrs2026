@@ -9,12 +9,15 @@ from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher
 
 from constants import Shooter
 
+import csv
+import bisect
+
 class ShooterSubsystem(Subsystem):
     def __init__(self):
         super().__init__()
 
         self.turretMotor: TalonFX = TalonFX(Shooter.Consts.turretId)
-        self.anglingMotor: TalonFX = TalonFX(Shooter.Consts.anglingId)
+        self.hoodMotor: TalonFX = TalonFX(Shooter.Consts.anglingId)
         self.shootingMotor: TalonFX = TalonFX(Shooter.Consts.shootingId)
 
         turretConfiguration: TalonFXConfiguration = TalonFXConfiguration()
@@ -26,14 +29,14 @@ class ShooterSubsystem(Subsystem):
         turretConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
         self.turretMotor.configurator.apply(turretConfiguration)
 
-        anglingConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-        anglingConfiguration.with_current_limits(
+        hoodConfiguration: TalonFXConfiguration = TalonFXConfiguration()
+        hoodConfiguration.with_current_limits(
             CurrentLimitsConfigs()
             .with_stator_current_limit(60)
             .with_supply_current_limit(30)
         )
-        anglingConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
-        self.anglingMotor.configurator.apply(anglingConfiguration)
+        hoodConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
+        self.hoodMotor.configurator.apply(hoodConfiguration)
 
         shootingConfiguration: TalonFXConfiguration = TalonFXConfiguration()
         shootingConfiguration.with_current_limits(
@@ -49,24 +52,85 @@ class ShooterSubsystem(Subsystem):
         self.shooterOut = VelocityTorqueCurrentFOC(0)
 
         self.turretMotor.set_position(0)
-        self.anglingMotor.set_position(0)
+        self.hoodMotor.set_position(0)
 
         inst = NetworkTableInstance.getDefault()
         self.shooterTable: NetworkTable = inst.getTable("ShooterTable")
-        self.rpmPub: FloatPublisher = self.shooterTable.getFloatTopic("X").publish()
+        self.rpmPub: FloatPublisher = self.shooterTable.getFloatTopic("RPM").publish()
         self.rpmPub.set(0)
+        self.hoodPub: FloatPublisher = self.shooterTable.getFloatTopic("HoodAngle").publish()
+        self.hoodPub.set(0)
+        self.turretPub: FloatPublisher = self.shooterTable.getFloatTopic("TurretAngle").publish()
+        self.turretPub.set(0)
 
-    def turnTurret(self, position: float):
+        self.shooterCalibrationData = self.loadCalibrationData("src/tuning/shooterTable.csv")
+        self.distances = [i['distance'] for i in self.shooterCalibrationData]
+        self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
+            
+    def angleTurret(self, position: float):
         self.turretOut.with_position(position)
         self.turretMotor.set_control(self.turretOut)
 
-    def angleShooter(self, position: float):
+    def angleHood(self, position: float):
         self.angleOut.with_position(position)
-        self.anglingMotor.set_control(self.angleOut)
+        self.hoodMotor.set_control(self.angleOut)
 
-    def setRpm(self, rpm: float):
+    def setRPM(self, rpm: float):
         self.shooterOut.with_velocity(rpm / 60)
         self.shootingMotor.set_control(self.shooterOut)
 
+    def loadCalibrationData(self, filePath) -> list[dict[str, float]]:
+        data: list[dict[str, float]] = []
+        with open(filePath, mode='r') as f:
+            # DictReader automatically uses the first row as keys
+            reader = csv.DictReader(f)
+            for row in reader:
+                # strip() removes spaces; float() converts strings to numbers
+                clean_row = {key.strip(): float(val.strip()) for key, val in row.items()}
+                data.append(clean_row)
+                
+        # Crucial: Ensure the list is sorted by distance for the search algorithm
+        data.sort(key=lambda x: x['distance'])
+        return data
+    
+    def lookupCalibration(self, distance: float) -> dict[str, float]:
+        # 1. Handle Lower Bound Clamping
+        if distance <= self.shooterCalibrationData[0]['distance']:
+            return self.shooterCalibrationData[0].copy()
+
+        # 2. Linear Search for the 'Upper' bounding row
+        upper_idx = -1
+        for i in range(len(self.shooterCalibrationData)):
+            if self.shooterCalibrationData[i]['distance'] > distance:
+                upper_idx = i
+                break
+        
+        # 3. Handle Upper Bound Clamping (if no distance was greater)
+        if upper_idx == -1:
+            return self.shooterCalibrationData[-1].copy()
+
+        # 4. Identify the two rows to interpolate between
+        lower = self.shooterCalibrationData[upper_idx - 1]
+        upper = self.shooterCalibrationData[upper_idx]
+
+        # 5. Calculate Interpolation Factor (t)
+        t = (distance - lower['distance']) / (upper['distance'] - lower['distance'])
+
+        # 6. Build the results
+        results = {'distance': distance}
+        for col in self.columns:
+            y0 = lower[col]
+            y1 = upper[col]
+            results[col] = y0 + t * (y1 - y0)
+            
+        return results
+
+    def updateDistance(self, distance: float):
+        calibration = self.lookupCalibration(distance)
+        self.setRPM(calibration['targetRPM'])
+        self.angleHood(calibration['hoodAngle'])
+
     def periodic(self):
         self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value)
+        self.hoodPub.set(self.hoodMotor.get_position().value)
+        self.turretPub.set(self.turretMotor.get_position().value)
