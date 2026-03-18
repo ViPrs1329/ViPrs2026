@@ -187,7 +187,7 @@ class RobotContainer:
 
     def updateFilteredInputs(self, targetInputs: list[float]):
         """Updates the filtered speeds using a simple low-pass filter."""
-        alpha: float = 0.5  # Smoothing factor between 0 and 1
+        alpha: float = 0.8  # Smoothing factor between 0 and 1
         current = targetInputs
         self.filteredInputs[0] = (
             alpha * current[0] + (1 - alpha) * self.filteredInputs[0]
@@ -206,11 +206,11 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                       -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[0] * self.maxSpeed * self.driveInputScalar
+                       -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0] * self.driveInputScalar)[0] * self.maxSpeed
                        # -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[1] * self.maxSpeed * self.driveInputScalar
+                        -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0] * self.driveInputScalar)[1] * self.maxSpeed
                         # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
