@@ -13,7 +13,7 @@ import csv
 import bisect
 
 class ShooterSubsystem(Subsystem):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.turretMotor: TalonFX = TalonFX(Shooter.Consts.turretId)
@@ -68,15 +68,15 @@ class ShooterSubsystem(Subsystem):
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
         self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
             
-    def angleTurret(self, position: float):
+    def angleTurret(self, position: float) -> None:
         self.turretOut.with_position(position)
         self.turretMotor.set_control(self.turretOut)
 
-    def angleHood(self, position: float):
+    def angleHood(self, position: float) -> None:
         self.angleOut.with_position(position)
         self.hoodMotor.set_control(self.angleOut)
 
-    def setRPM(self, rpm: float):
+    def setRPM(self, rpm: float) -> None:
         self.shooterOut.with_velocity(rpm / 60)
         self.shootingMotor.set_control(self.shooterOut)
 
@@ -126,12 +126,12 @@ class ShooterSubsystem(Subsystem):
             
         return results
 
-    def updateDistance(self, distance: float):
+    def updateDistance(self, distance: float) -> None:
         calibration = self.lookupCalibration(distance)
         self.setRPM(calibration['targetRPM'])
         self.angleHood(calibration['hoodAngle'])
 
-    def periodic(self):
+    def periodic(self) -> None:
         self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value)
         self.hoodPub.set(self.hoodMotor.get_position().value)
         self.turretPub.set(self.turretMotor.get_position().value)
