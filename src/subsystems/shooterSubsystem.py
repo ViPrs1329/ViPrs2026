@@ -63,6 +63,12 @@ class ShooterSubsystem(Subsystem):
         self.hoodPub.set(0)
         self.turretPub: FloatPublisher = self.shooterTable.getFloatTopic("TurretAngle").publish()
         self.turretPub.set(0)
+        self.targetRPMPub: FloatPublisher = self.shooterTable.getFloatTopic("TargetRPM").publish()
+        self.targetRPMPub.set(0)
+        self.targetHoodPub: FloatPublisher = self.shooterTable.getFloatTopic("TargetHoodAngle").publish()
+        self.targetHoodPub.set(0)
+        self.targetTurretPub: FloatPublisher = self.shooterTable.getFloatTopic("TargetTurretAngle").publish()
+        self.targetTurretPub.set(0)
 
         self.shooterCalibrationData = self.loadCalibrationData("src/tuning/shooterTable.csv")
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
@@ -71,14 +77,17 @@ class ShooterSubsystem(Subsystem):
     def angleTurret(self, position: float) -> None:
         self.turretOut.with_position(position)
         self.turretMotor.set_control(self.turretOut)
+        self.targetTurretPub.set(position)
 
     def angleHood(self, position: float) -> None:
         self.angleOut.with_position(position)
         self.hoodMotor.set_control(self.angleOut)
+        self.targetHoodPub.set(position)
 
     def setRPM(self, rpm: float) -> None:
         self.shooterOut.with_velocity(rpm / 60)
         self.shootingMotor.set_control(self.shooterOut)
+        self.targetRPMPub.set(rpm)
 
     def loadCalibrationData(self, filePath) -> list[dict[str, float]]:
         data: list[dict[str, float]] = []
