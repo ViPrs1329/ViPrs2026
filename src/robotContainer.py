@@ -91,7 +91,7 @@ class RobotContainer:
                 self.maxAngularRate * 0.05
             )  # Add a 3% deadband
             .with_drive_request_type(
-                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+                swerve.SwerveModule.DriveRequestType.VELOCITY
             )  # Use open-loop control for drive motors
         )
         self.brake = swerve.requests.SwerveDriveBrake()
@@ -206,11 +206,11 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                       -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0] * self.driveInputScalar)[0] * self.maxSpeed
+                       -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[0] * self.maxSpeed * self.driveInputScalar
                        # -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0] * self.driveInputScalar)[1] * self.maxSpeed
+                        -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[1] * self.maxSpeed * self.driveInputScalar
                         # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
