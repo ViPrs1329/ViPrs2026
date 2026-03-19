@@ -2,8 +2,8 @@ from commands2 import Subsystem
 from wpilib import SmartDashboard
 
 from phoenix6.hardware import TalonFX, CANcoder
-from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC
-from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs
+from phoenix6.controls import MotionMagicTorqueCurrentFOC, MotionMagicVelocityTorqueCurrentFOC
+from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs, MotionMagicConfigs
 
 from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher
 
@@ -35,6 +35,11 @@ class ShooterSubsystem(Subsystem):
             CurrentLimitsConfigs()
             .with_stator_current_limit(60)
             .with_supply_current_limit(30)
+        ).with_motion_magic(
+            MotionMagicConfigs()
+            .with_motion_magic_cruise_velocity(50)
+            .with_motion_magic_acceleration(40)
+            .with_motion_magic_jerk(100)
         )
         hoodConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
         self.hoodMotor.configurator.apply(hoodConfiguration)
@@ -48,9 +53,9 @@ class ShooterSubsystem(Subsystem):
         shootingConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
         self.shootingMotor.configurator.apply(shootingConfiguration)
 
-        self.turretOut = PositionTorqueCurrentFOC(0)
-        self.angleOut = PositionTorqueCurrentFOC(0)
-        self.shooterOut = VelocityTorqueCurrentFOC(0)
+        self.turretOut = MotionMagicTorqueCurrentFOC(0)
+        self.angleOut = MotionMagicTorqueCurrentFOC(0)
+        self.shooterOut = MotionMagicVelocityTorqueCurrentFOC(0)
 
         self.turretMotor.set_position(0)
         self.hoodMotor.set_position(0)
