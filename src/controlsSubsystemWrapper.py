@@ -15,6 +15,7 @@ from ntcore import DoublePublisher
 from ntcore import StringPublisher
 from ntcore import BooleanPublisher
 from ntcore import StructPublisher
+from phoenix6.hardware import TalonFX
 
 from wpimath.geometry import Pose2d
 from wpilib import Timer
@@ -73,6 +74,10 @@ class SubsystemWrapper(Subsystem):
         # Create persistent publishers
         self.driveRotationPub = self.logTable.getStructTopic("drive/odometry", Pose2d).publish()
         self.targetVisiblePub = self.logTable.getBooleanTopic("limelight/targetVisible").publish()
+
+        self.azimuthMotor = TalonFX(1, "Drive CANivore")
+        self.azimuthTVPub = self.logTable.getFloatTopic("azimuth target velocity").publish()
+        self.azimuthCVPub = self.logTable.getFloatTopic("azimuth current velocity").publish()
         #TODO add other publishers as needed
         
     def updateNetworkTables(self) -> None:
@@ -87,6 +92,10 @@ class SubsystemWrapper(Subsystem):
         # Log command states
         commandsTable = self.logTable.getSubTable("commands")
         commandsTable.putBoolean("resetCommand", self.resetSubsystemsCommand.isScheduled())
+
+        # log drivetrain for tuning
+        self.azimuthTVPub.set(self.azimuthMotor.get_closed_loop_reference().value)
+        self.azimuthCVPub.set(self.azimuthMotor.get_velocity().value)
 
         #TODO add other subsystem logging as needed
 

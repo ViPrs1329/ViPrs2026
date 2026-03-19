@@ -18,10 +18,10 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        .with_k_p(0)
+        .with_k_p(50)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0)
+        .with_k_s(0.25)
         .with_k_v(0)
         .with_k_a(0)
         .with_static_feedforward_sign(
@@ -32,11 +32,11 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(0)
+        .with_k_p(10)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0)
-        .with_k_v(0)
+        .with_k_s(3)
+        .with_k_v(0.1)
         .with_k_a(0)
     )
 
@@ -82,11 +82,6 @@ class TunerConstants:
         .with_stator_current_limit_enable(True)
         .with_supply_current_limit(30.0)
         .with_supply_current_limit_enable(True)
-    ).with_motion_magic(
-        configs.MotionMagicConfigs()
-        .with_motion_magic_cruise_velocity(80)
-        .with_motion_magic_acceleration(80)
-        .with_motion_magic_jerk(500)
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()
     # Configs for the Pigeon 2; leave this None to skip applying Pigeon 2 configs
