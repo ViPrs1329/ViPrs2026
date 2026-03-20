@@ -20,6 +20,7 @@ from wpimath.geometry import Translation2d
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import rotationsToRadians
 from wpimath import units
+from wpimath.filter import SlewRateLimiter
 from wpilib import SendableChooser
 from wpilib import SmartDashboard
 from wpilib import DriverStation
@@ -86,12 +87,12 @@ class RobotContainer:
 
         self.drive = (
             swerve.requests.FieldCentric()
-            .with_deadband(self.maxSpeed * 0.05)
+            .with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
             .with_rotational_deadband(
-                self.maxAngularRate * 0.05
+                self.maxAngularRate * 0.25 * self.driveInputScalar
             )  # Add a 3% deadband
             .with_drive_request_type(
-                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+                swerve.SwerveModule.DriveRequestType.VELOCITY
             )  # Use open-loop control for drive motors
         )
         self.brake = swerve.requests.SwerveDriveBrake()
@@ -102,6 +103,8 @@ class RobotContainer:
                 swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
             )
         )
+
+        self.magLimiter = SlewRateLimiter(3)
 
         self._logger = Telemetry(self.maxSpeed)
         
@@ -166,10 +169,14 @@ class RobotContainer:
 
         d: float = sqrt(x ** 2 + y ** 2)
 
+        unitx = x / d
+        unity = y / d
+
         d = min(d, 1)
         factor: float = d ** 3
+        limitedFactor = self.magLimiter.calculate(factor)
 
-        return (factor * x, factor * y)
+        return (limitedFactor * unitx, limitedFactor * unity)
 
     def rotInputShaper(self, x: float):
         """Adds a gain curve to the rotation input"""
@@ -178,16 +185,22 @@ class RobotContainer:
     
     def goSlow(self):
         self.driveInputScalar = 0.1
+        self.drive = self.drive.with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
+        self.drive = self.drive.with_rotational_deadband(self.maxAngularRate * 0.25 * self.driveInputScalar)
         
     def goMedium(self):
         self.driveInputScalar = 0.5
+        self.drive = self.drive.with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
+        self.drive = self.drive.with_rotational_deadband(self.maxAngularRate * 0.25 * self.driveInputScalar)
 
     def goFast(self):
         self.driveInputScalar = 1.0
+        self.drive = self.drive.with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
+        self.drive = self.drive.with_rotational_deadband(self.maxAngularRate * 0.25 * self.driveInputScalar)
 
     def updateFilteredInputs(self, targetInputs: list[float]):
         """Updates the filtered speeds using a simple low-pass filter."""
-        alpha: float = 0.5  # Smoothing factor between 0 and 1
+        alpha: float = 0.9  # Smoothing factor between 0 and 1
         current = targetInputs
         self.filteredInputs[0] = (
             alpha * current[0] + (1 - alpha) * self.filteredInputs[0]
@@ -214,7 +227,7 @@ class RobotContainer:
                         # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
-                        -self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate
+                        -self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
                     ) # Drive counterclockwise with negative X (left)
                 )
             )
