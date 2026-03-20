@@ -21,7 +21,7 @@ class TunerConstants:
         .with_k_p(50)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0.25)
+        .with_k_s(0.22)
         .with_k_v(0)
         .with_k_a(0)
         .with_static_feedforward_sign(
@@ -32,10 +32,10 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(10)
+        .with_k_p(11.25)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(3)
+        .with_k_s(2.5)
         .with_k_v(0.1)
         .with_k_a(0)
     )
