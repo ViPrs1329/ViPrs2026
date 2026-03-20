@@ -227,7 +227,7 @@ class RobotContainer:
                         # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
-                        -self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate
+                        -self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
                     ) # Drive counterclockwise with negative X (left)
                 )
             )
