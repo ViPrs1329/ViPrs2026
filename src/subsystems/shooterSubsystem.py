@@ -2,7 +2,7 @@ from commands2 import Subsystem
 from wpilib import SmartDashboard
 
 from phoenix6.hardware import TalonFX, CANcoder
-from phoenix6.controls import MotionMagicTorqueCurrentFOC, MotionMagicVelocityTorqueCurrentFOC
+from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC
 from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs, MotionMagicConfigs
 
 from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher
@@ -10,7 +10,7 @@ from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher
 from constants import Shooter
 
 import csv
-import bisect
+
 
 class ShooterSubsystem(Subsystem):
     def __init__(self) -> None:
@@ -27,7 +27,7 @@ class ShooterSubsystem(Subsystem):
             .with_stator_current_limit(40)
             .with_supply_current_limit(20)
         )
-        turretConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
+        turretConfiguration.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0)
         self.turretMotor.configurator.apply(turretConfiguration)
 
         hoodConfiguration: TalonFXConfiguration = TalonFXConfiguration()
@@ -41,7 +41,7 @@ class ShooterSubsystem(Subsystem):
             .with_motion_magic_acceleration(40)
             .with_motion_magic_jerk(100)
         )
-        hoodConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
+        hoodConfiguration.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0)
         self.hoodMotor.configurator.apply(hoodConfiguration)
 
         shootingConfiguration: TalonFXConfiguration = TalonFXConfiguration()
@@ -50,12 +50,12 @@ class ShooterSubsystem(Subsystem):
             .with_stator_current_limit(80)
             .with_supply_current_limit(40)
         )
-        shootingConfiguration.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
+        shootingConfiguration.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(10).with_k_v(0).with_k_a(0)
         self.shootingMotor.configurator.apply(shootingConfiguration)
 
-        self.turretOut = MotionMagicTorqueCurrentFOC(0)
-        self.angleOut = MotionMagicTorqueCurrentFOC(0)
-        self.shooterOut = MotionMagicVelocityTorqueCurrentFOC(0)
+        self.turretOut = PositionTorqueCurrentFOC(0).with_slot(0)
+        self.angleOut = PositionTorqueCurrentFOC(0).with_slot(0)
+        # self.shooterOut = VelocityTorqueCurrentFOC(0).with_slot(0)
 
         self.turretMotor.set_position(0)
         self.hoodMotor.set_position(0)
@@ -75,9 +75,11 @@ class ShooterSubsystem(Subsystem):
         self.targetTurretPub: FloatPublisher = self.shooterTable.getFloatTopic("TargetTurretAngle").publish()
         self.targetTurretPub.set(0)
 
-        self.shooterCalibrationData = self.loadCalibrationData("src/tuning/shooterTable.csv")
+        self.shooterCalibrationData: list[dict[str, float]] = self.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
         self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
+
+        self.setRPM(1000)
             
     def angleTurret(self, position: float) -> None:
         self.turretOut.with_position(position)
@@ -90,8 +92,8 @@ class ShooterSubsystem(Subsystem):
         self.targetHoodPub.set(position)
 
     def setRPM(self, rpm: float) -> None:
-        self.shooterOut.with_velocity(rpm / 60)
-        self.shootingMotor.set_control(self.shooterOut)
+        # output = self.shooterOut.with_velocity(100)
+        self.shootingMotor.set_control(VelocityTorqueCurrentFOC(100).with_slot(0))
         self.targetRPMPub.set(rpm)
 
     def loadCalibrationData(self, filePath) -> list[dict[str, float]]:
@@ -146,6 +148,7 @@ class ShooterSubsystem(Subsystem):
         self.angleHood(calibration['hoodAngle'])
 
     def periodic(self) -> None:
-        self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value)
+        self.updateDistance(1)
+        self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value * 60)
         self.hoodPub.set(self.hoodMotor.get_position().value)
         self.turretPub.set(self.turretMotor.get_position().value)

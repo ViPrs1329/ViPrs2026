@@ -2,6 +2,7 @@ import time
 import wpilib
 import commands2
 from robotContainer import RobotContainer
+import os
 
 class MyRobot(commands2.TimedCommandRobot):
 
@@ -21,6 +22,7 @@ class MyRobot(commands2.TimedCommandRobot):
             raise RuntimeError(f"Failed to initialize RobotContainer:\n{e}")
 
     def robotPeriodic(self):
+        # print(os.getcwd())
         commands2.CommandScheduler.getInstance().run()
         
     def autonomousInit(self):
