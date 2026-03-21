@@ -250,14 +250,14 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
             lambda speeds, feedforwards: self.set_control(
                 self._apply_robot_speeds
                 .with_speeds(ChassisSpeeds(speeds.vx, speeds.vy, speeds.omega))
-                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesYNewtons)
                 .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
             ),
             PPHolonomicDriveController(
                 # PID constants for translation
-                PIDConstants(10.0, 0.0, 0.0),
+                PIDConstants(9.0, 0.0, 0.0),
                 # PID constants for rotation
-                PIDConstants(7.0, 0.0, 0.0)
+                PIDConstants(2.5, 0.0, 0.0)
             ),
             config,
             # Assume the path needs to be flipped for Red vs Blue, this is normally the case

@@ -21,7 +21,7 @@ class TunerConstants:
         .with_k_p(50)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0)
+        .with_k_s(0.22)
         .with_k_v(0)
         .with_k_a(0)
         .with_static_feedforward_sign(
@@ -32,11 +32,12 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(0.01)
+        .with_k_p(11.25)
         .with_k_i(0)
         .with_k_d(0)
-        .with_k_s(0)
-        .with_k_v(0)
+        .with_k_s(2.5)
+        .with_k_v(0.1)
+        .with_k_a(0)
     )
 
     # The closed-loop output type to use for the steer motors;
@@ -44,7 +45,7 @@ class TunerConstants:
     _steer_closed_loop_output = swerve.ClosedLoopOutputType.VOLTAGE
     # The closed-loop output type to use for the drive motors;
     # This affects the PID/FF gains for the drive motors
-    _drive_closed_loop_output = swerve.ClosedLoopOutputType.VOLTAGE
+    _drive_closed_loop_output = swerve.ClosedLoopOutputType.TORQUE_CURRENT_FOC
 
     # The type of motor used for the drive motor
     _drive_motor_type = swerve.DriveMotorArrangement.TALON_FX_INTEGRATED
@@ -61,13 +62,26 @@ class TunerConstants:
 
     # Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     # Some configs will be overwritten; check the `with_*_initial_configs()` API documentation.
-    _drive_initial_configs = configs.TalonFXConfiguration()
+    _drive_initial_configs = configs.TalonFXConfiguration().with_current_limits(
+        configs.CurrentLimitsConfigs()
+        .with_stator_current_limit(80.0)
+        .with_stator_current_limit_enable(True)
+        .with_supply_current_limit(40.0)
+        .with_supply_current_limit_enable(True)
+    ).with_motion_magic(
+        configs.MotionMagicConfigs()
+        .with_motion_magic_cruise_velocity(80)
+        .with_motion_magic_acceleration(80)
+        .with_motion_magic_jerk(500)
+    )
     _steer_initial_configs = configs.TalonFXConfiguration().with_current_limits(
         configs.CurrentLimitsConfigs()
         # Swerve azimuth does not require much torque output, so we can set a relatively low
         # stator current limit to help avoid brownouts without impacting performance.
         .with_stator_current_limit(60.0)
         .with_stator_current_limit_enable(True)
+        .with_supply_current_limit(30.0)
+        .with_supply_current_limit_enable(True)
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()
     # Configs for the Pigeon 2; leave this None to skip applying Pigeon 2 configs

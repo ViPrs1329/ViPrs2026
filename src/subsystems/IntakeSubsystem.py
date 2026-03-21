@@ -17,7 +17,7 @@ class IntakeSubsystem(Subsystem):
         )
 
         armConfig = configs.TalonFXConfiguration()
-        armConfig.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_gravity_type(signals.GravityTypeValue.ARM_COSINE).with_gravity_arm_position_offset(0) # the arm position offset will be calculated by the design team
+        armConfig.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_gravity_type(signals.GravityTypeValue.ARM_COSINE) # the arm position offset will be calculated by the design team
         armConfig.with_current_limits(
             configs.CurrentLimitsConfigs()
             .with_stator_current_limit(60)
