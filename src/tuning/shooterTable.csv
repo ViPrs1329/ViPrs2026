@@ -1,5 +1,5 @@
 distance, targetRPM, hoodAngle, TOF,  hoodRecoveryFactor, TOFRecoveryFactor, noShotRPM
-0,        1000,      0,         0,    0,                  0,                 0
+0,        1000,      1,         0,    0,                  0,                 0
 1.5,      2900,      0,         0.3,  0.0,                0.0,               2700
 2,        2970,      0,         1.0,  0.0,                0.0,               2800
 2.5,      3200,      0,         1.2,  0.0,                0.0,               3000

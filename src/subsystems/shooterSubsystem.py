@@ -43,17 +43,12 @@ class ShooterSubsystem(Subsystem):
         self.turretMotor.configurator.apply(turretConfiguration)
 
         hoodConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-        hoodConfiguration.with_current_limits(
+        hoodConfiguration = hoodConfiguration.with_current_limits(
             CurrentLimitsConfigs()
             .with_stator_current_limit(60)
             .with_supply_current_limit(30)
-        ).with_motion_magic(
-            MotionMagicConfigs()
-            .with_motion_magic_cruise_velocity(50)
-            .with_motion_magic_acceleration(40)
-            .with_motion_magic_jerk(100)
         )
-        hoodConfiguration.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0)
+        hoodConfiguration.slot0.with_k_p(0.1).with_k_i(0).with_k_d(0).with_k_s(5)
         self.hoodMotor.configurator.apply(hoodConfiguration)
 
         shootingConfiguration: TalonFXConfiguration = TalonFXConfiguration()
@@ -116,7 +111,7 @@ class ShooterSubsystem(Subsystem):
         self.targetTurretPub.set(position)
 
     def angleHood(self, position: float) -> None:
-        self.angleOut.with_position(position)
+        self.angleOut = self.angleOut.with_position(position)
         self.hoodMotor.set_control(self.angleOut)
         self.targetHoodPub.set(position)
 
