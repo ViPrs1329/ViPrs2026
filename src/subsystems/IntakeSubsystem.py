@@ -9,12 +9,11 @@ class IntakeSubsystem(Subsystem):
         super().__init__()
 
         intakeConfig = configs.TalonFXConfiguration()
-        intakeConfig.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_s(0)
-        intakeConfig.with_current_limits(
-            configs.CurrentLimitsConfigs()
-            .with_stator_current_limit(60)
-            .with_supply_current_limit(30)
-        )
+        # intakeConfig = intakeConfig.with_current_limits(
+        #     configs.CurrentLimitsConfigs()
+        #     .with_stator_current_limit(60)
+        #     .with_supply_current_limit(30)
+        # )
 
         armConfig = configs.TalonFXConfiguration()
         armConfig.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_gravity_type(signals.GravityTypeValue.ARM_COSINE) # the arm position offset will be calculated by the design team
@@ -52,12 +51,14 @@ class IntakeSubsystem(Subsystem):
             lambda: self.setIntakeSpeed(0) # rotations per second
         )
 
+        self.setIntakeSpeed(0.9)
+
     def periodic(self):
-        self.intakeMotor.set_control(self.intakeMotorSpeed)
+        # self.intakeMotor.set_control(self.intakeMotorSpeed)
         self.armMotor.set_control(self.armMotorPositioning)
 
     def setArmPosition(self, position: float):
         self.armMotorPositioning.with_position(position)
 
     def setIntakeSpeed(self, speed: float):
-        self.intakeMotorSpeed.with_velocity(speed)
+        self.intakeMotor.set_control(controls.DutyCycleOut(speed, True))
