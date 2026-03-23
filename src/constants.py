@@ -54,6 +54,9 @@ class Shooter:
         turretEncoderId: int = 53
         hoodId: int = 51
         shootingId: int = 50
+        towerConveyor: int = 56
+        frontConveyor: int = 21
+        backConveyor: int = 22
 
     class States:
         pass
@@ -61,7 +64,7 @@ class Shooter:
 class Intake:
 
     class Consts:
-        intakeCANId = 100
+        intakeCANId = 40
         armCANId = 101
 
 class FNS:
