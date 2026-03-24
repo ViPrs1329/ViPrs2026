@@ -1,5 +1,5 @@
 from commands2 import Subsystem
-from wpilib import SmartDashboard
+from wpilib import SmartDashboard, Timer
 
 from phoenix6.hardware import TalonFX, CANcoder
 from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC, DutyCycleOut
@@ -104,6 +104,8 @@ class ShooterSubsystem(Subsystem):
         self.hoodTunable: TunableDouble = TunableDouble("Tunable Hood", 0, "Shooter")
         self.distTunable: TunableDouble = TunableDouble("Distance Tunable", 0, "Shooter")
 
+        self._last_publish_time = Timer.getFPGATimestamp()
+
         self.shooterCalibrationData: list[dict[str, float]] = self.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
         self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
@@ -186,6 +188,10 @@ class ShooterSubsystem(Subsystem):
 
     def periodic(self) -> None:
         self.updateDistance(self.distTunable.get())
-        self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value * 60)
-        self.hoodPub.set(self.hoodMotor.get_position().value)
-        self.turretPub.set(self.turretMotor.get_position().value)
+
+
+        if Timer.getFPGATimestamp() - self._last_publish_time >= 0.25:
+            self._last_publish_time = Timer.getFPGATimestamp()
+            self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value * 60)
+            self.hoodPub.set(self.hoodMotor.get_position().value)
+            self.turretPub.set(self.turretMotor.get_position().value)
