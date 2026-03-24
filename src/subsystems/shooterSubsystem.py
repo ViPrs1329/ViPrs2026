@@ -9,6 +9,8 @@ from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher
 
 from constants import Shooter
 
+from tuning.tunable import TunableDouble
+
 import csv
 
 
@@ -25,7 +27,7 @@ class ShooterSubsystem(Subsystem):
         self.backConveyor: TalonFX = TalonFX(Shooter.Consts.backConveyor)
 
         towerConveyorConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-        towerConveyorConfiguration = towerConveyorConfiguration.with_current_limits(
+        towerConveyorConfiguration.with_current_limits(
             CurrentLimitsConfigs()
             .with_stator_current_limit(40)
             .with_supply_current_limit(20)
@@ -43,7 +45,7 @@ class ShooterSubsystem(Subsystem):
         self.turretMotor.configurator.apply(turretConfiguration)
 
         hoodConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-        hoodConfiguration = hoodConfiguration.with_current_limits(
+        hoodConfiguration.with_current_limits(
             CurrentLimitsConfigs()
             .with_stator_current_limit(60)
             .with_supply_current_limit(30)
@@ -52,24 +54,24 @@ class ShooterSubsystem(Subsystem):
         self.hoodMotor.configurator.apply(hoodConfiguration)
 
         shootingConfiguration: TalonFXConfiguration = TalonFXConfiguration()
-        # shootingConfiguration = shootingConfiguration.with_current_limits(
-        #     CurrentLimitsConfigs()
-        #     .with_stator_current_limit(80)
-        #     .with_supply_current_limit(40)
-        #     .with_stator_current_limit_enable(True)
-        #     .with_supply_current_limit_enable(True)
-        # )
-        shootingConfiguration = shootingConfiguration.with_torque_current(
+        shootingConfiguration.with_current_limits(
+            CurrentLimitsConfigs()
+            .with_stator_current_limit(80)
+            .with_supply_current_limit(40)
+            .with_stator_current_limit_enable(True)
+            .with_supply_current_limit_enable(True)
+        )
+        shootingConfiguration.with_torque_current(
             TorqueCurrentConfigs()
             .with_peak_forward_torque_current(100)
             .with_peak_reverse_torque_current(-100)
             .with_torque_neutral_deadband(0)
         )
-        shootingConfiguration = shootingConfiguration.with_closed_loop_general(
+        shootingConfiguration.with_closed_loop_general(
             ClosedLoopGeneralConfigs()
             .with_gain_sched_error_threshold(0)
         )
-        shootingConfiguration = shootingConfiguration.with_software_limit_switch(
+        shootingConfiguration.with_software_limit_switch(
             SoftwareLimitSwitchConfigs()
             .with_forward_soft_limit_enable(False)
             .with_reverse_soft_limit_enable(False)
@@ -98,6 +100,9 @@ class ShooterSubsystem(Subsystem):
         self.targetHoodPub.set(0)
         self.targetTurretPub: FloatPublisher = self.shooterTable.getFloatTopic("TargetTurretAngle").publish()
         self.targetTurretPub.set(0)
+        self.rpmTunable: TunableDouble = TunableDouble("Tunable RPM", 0, "Shooter")
+        self.hoodTunable: TunableDouble = TunableDouble("Tunable Hood", 0, "Shooter")
+        self.distTunable: TunableDouble = TunableDouble("Distance Tunable", 0, "Shooter")
 
         self.shooterCalibrationData: list[dict[str, float]] = self.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
@@ -174,11 +179,13 @@ class ShooterSubsystem(Subsystem):
 
     def updateDistance(self, distance: float) -> None:
         calibration = self.lookupCalibration(distance)
-        self.setRPM(calibration['targetRPM'])
-        self.angleHood(calibration['hoodAngle'])
+        # self.setRPM(calibration['targetRPM'])
+        self.setRPM(self.rpmTunable.get())
+        # self.angleHood(calibration['hoodAngle'])
+        self.angleHood(self.hoodTunable.get())
 
     def periodic(self) -> None:
-        self.updateDistance(0)
+        self.updateDistance(self.distTunable.get())
         self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value * 60)
         self.hoodPub.set(self.hoodMotor.get_position().value)
         self.turretPub.set(self.turretMotor.get_position().value)
