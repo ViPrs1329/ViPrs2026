@@ -2,8 +2,9 @@ from commands2 import Subsystem
 from wpilib import SmartDashboard
 
 from phoenix6.hardware import TalonFX, CANcoder
-from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC, DutyCycleOut
-from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs, MotionMagicConfigs, TorqueCurrentConfigs, ClosedLoopGeneralConfigs, SoftwareLimitSwitchConfigs
+from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC, DutyCycleOut, PositionVoltage
+from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs, MotionMagicConfigs, TorqueCurrentConfigs, ClosedLoopGeneralConfigs, SoftwareLimitSwitchConfigs, FeedbackConfigs
+from phoenix6.signals import GravityTypeValue, StaticFeedforwardSignValue, FeedbackSensorSourceValue
 
 from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher
 
@@ -38,8 +39,12 @@ class ShooterSubsystem(Subsystem):
             CurrentLimitsConfigs()
             .with_stator_current_limit(40)
             .with_supply_current_limit(20)
+        ).with_feedback(
+            FeedbackConfigs()
+            .with_feedback_sensor_source(FeedbackSensorSourceValue.FUSED_CANCODER)
+            .with_feedback_remote_sensor_id(53)
         )
-        turretConfiguration.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0)
+        turretConfiguration.slot0.with_k_p(50).with_k_i(0).with_k_d(0).with_k_s(10)
         self.turretMotor.configurator.apply(turretConfiguration)
 
         hoodConfiguration: TalonFXConfiguration = TalonFXConfiguration()
@@ -48,7 +53,7 @@ class ShooterSubsystem(Subsystem):
             .with_stator_current_limit(60)
             .with_supply_current_limit(30)
         )
-        hoodConfiguration.slot0.with_k_p(0.1).with_k_i(0).with_k_d(0).with_k_s(5)
+        hoodConfiguration.slot0.with_k_p(10).with_k_i(0).with_k_d(0.1).with_k_s(0.23).with_k_g(0.06).with_gravity_type(GravityTypeValue.ELEVATOR_STATIC).with_static_feedforward_sign(StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
         self.hoodMotor.configurator.apply(hoodConfiguration)
 
         shootingConfiguration: TalonFXConfiguration = TalonFXConfiguration()
@@ -59,26 +64,18 @@ class ShooterSubsystem(Subsystem):
         #     .with_stator_current_limit_enable(True)
         #     .with_supply_current_limit_enable(True)
         # )
-        shootingConfiguration = shootingConfiguration.with_torque_current(
-            TorqueCurrentConfigs()
-            .with_peak_forward_torque_current(100)
-            .with_peak_reverse_torque_current(-100)
-            .with_torque_neutral_deadband(0)
+        shootingConfiguration = shootingConfiguration.with_current_limits(
+            CurrentLimitsConfigs()
+            .with_stator_current_limit(80)
+            .with_supply_current_limit(40)
+            .with_stator_current_limit_enable(True)
+            .with_supply_current_limit_enable(True)
         )
-        shootingConfiguration = shootingConfiguration.with_closed_loop_general(
-            ClosedLoopGeneralConfigs()
-            .with_gain_sched_error_threshold(0)
-        )
-        shootingConfiguration = shootingConfiguration.with_software_limit_switch(
-            SoftwareLimitSwitchConfigs()
-            .with_forward_soft_limit_enable(False)
-            .with_reverse_soft_limit_enable(False)
-        )
-        shootingConfiguration.slot0.with_k_p(5).with_k_i(0).with_k_d(0).with_k_s(8.12636).with_k_v(0).with_k_a(0)
+        shootingConfiguration.slot0.with_k_p(5).with_k_i(0).with_k_d(0).with_k_s(2).with_k_v(0.23).with_k_a(0).with_static_feedforward_sign(StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
         self.shootingMotor.configurator.apply(shootingConfiguration)
 
         self.turretOut = PositionTorqueCurrentFOC(0).with_slot(0)
-        self.angleOut = PositionTorqueCurrentFOC(0).with_slot(0)
+        self.angleOut = PositionVoltage(0).with_slot(0)
         # self.shooterOut = VelocityTorqueCurrentFOC(0).with_slot(0)
 
         self.turretMotor.set_position(0)
@@ -104,6 +101,7 @@ class ShooterSubsystem(Subsystem):
         self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
             
         self.startConveyor()
+        # self.angleTurret(1)
 
     def angleTurret(self, position: float) -> None:
         self.turretOut.with_position(position)
@@ -121,7 +119,7 @@ class ShooterSubsystem(Subsystem):
         self.targetRPMPub.set(rpm)
 
     def startConveyor(self):
-        self.towerConveyor.set_control(DutyCycleOut(0.8, True))
+        self.towerConveyor.set_control(DutyCycleOut(0.7, True))
 
     def stopConveyor(self):
         self.towerConveyor.stopMotor()
@@ -175,10 +173,11 @@ class ShooterSubsystem(Subsystem):
     def updateDistance(self, distance: float) -> None:
         calibration = self.lookupCalibration(distance)
         self.setRPM(calibration['targetRPM'])
+        # self.shootingMotor.set_control(DutyCycleOut(1))
         self.angleHood(calibration['hoodAngle'])
 
     def periodic(self) -> None:
-        self.updateDistance(0)
+        self.updateDistance(4.5)
         self.rpmPub.set(self.shootingMotor.get_rotor_velocity().value * 60)
         self.hoodPub.set(self.hoodMotor.get_position().value)
         self.turretPub.set(self.turretMotor.get_position().value)

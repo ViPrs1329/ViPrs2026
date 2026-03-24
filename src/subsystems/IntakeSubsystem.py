@@ -51,7 +51,7 @@ class IntakeSubsystem(Subsystem):
             lambda: self.setIntakeSpeed(0) # rotations per second
         )
 
-        self.setIntakeSpeed(0.9)
+        self.setIntakeSpeed(0)
 
     def periodic(self):
         # self.intakeMotor.set_control(self.intakeMotorSpeed)

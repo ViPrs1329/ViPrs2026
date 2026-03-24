@@ -120,6 +120,7 @@ class SubsystemWrapper(Subsystem):
         Moves to safe positions without zeroing sensors.
         """
         self.resetBeforeTeleopCommand.schedule()
+        self.shooter.shooterCalibrationData = self.shooter.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
 
     def resetBeforeAutonomous(self) -> None:
         """
