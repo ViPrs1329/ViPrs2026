@@ -93,6 +93,7 @@ class ShooterSubsystem(Subsystem):
         self.rpmTunable: TunableDouble = TunableDouble("Tunable RPM", 0, "Shooter")
         self.hoodTunable: TunableDouble = TunableDouble("Tunable Hood", 0, "Shooter")
         self.distTunable: TunableDouble = TunableDouble("Distance Tunable", 0, "Shooter")
+        self.turretTunable: TunableDouble = TunableDouble("Target Turret", 0, "Shooter")
 
         self._last_publish_time = Timer.getFPGATimestamp()
 
@@ -176,6 +177,7 @@ class ShooterSubsystem(Subsystem):
         self.setRPM(self.rpmTunable.get())
         # self.angleHood(calibration['hoodAngle'])
         self.angleHood(self.hoodTunable.get())
+        # self.angleTurret(self.turretTunable.get())
 
     def periodic(self) -> None:
         self.updateDistance(self.distTunable.get())

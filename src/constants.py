@@ -65,7 +65,7 @@ class Intake:
 
     class Consts:
         intakeCANId = 40
-        armCANId = 101
+        armCANId = 20
 
 class FNS:
 
