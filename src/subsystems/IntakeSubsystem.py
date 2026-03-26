@@ -55,7 +55,6 @@ class IntakeSubsystem(Subsystem):
         self.intakePosTunable = TunableDouble("Intake Position", 7.6, "Intake")
         self.intakePosPub = TunableDouble("Intake Report", 0, "Intake")
 
-        self.setIntakeSpeed(0)
         self.counter = 0
 
     def extendIntake(self) -> None:
@@ -66,6 +65,9 @@ class IntakeSubsystem(Subsystem):
 
     def startIntake(self):
         self.setIntakeSpeed(0.6)
+
+    def reverseIntake(self):
+        self.setIntakeSpeed(-0.6)
 
     def stopIntake(self):
         self.intakeMotor.stopMotor()

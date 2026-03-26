@@ -44,7 +44,7 @@ class LimelightSubsystem(Subsystem):
         for table in self.tables:
             
             # botpose_orb uses MT2 compared to botpose which uses MT1
-            botPose = table.getNumberArray("botpose_orb", [0, 0, 0, 0, 0, 0]) 
+            botPose = table.getNumberArray("botpose_wpiblue", [0, 0, 0, 0, 0, 0]) 
             if table.getNumber("tv", 0) == 1:
                 weight: float = table.getNumber("ta", 0)
                 totalWeight += weight

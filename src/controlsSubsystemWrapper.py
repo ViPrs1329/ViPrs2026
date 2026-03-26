@@ -103,9 +103,9 @@ class SubsystemWrapper(Subsystem):
         """Called periodically, use for updating NetworkTables"""
         self.updateNetworkTables()
 
-        visionRobotPose, stdev = self.limelight.getRobotPositionFieldRelative()
-        if visionRobotPose is not None:
-            self.drivetrain.add_vision_measurement(visionRobotPose, Timer.getFPGATimestamp(), stdev)
+        # visionRobotPose, stdev = self.limelight.getRobotPositionFieldRelative()
+        # if visionRobotPose is not None:
+        #     self.drivetrain.add_vision_measurement(visionRobotPose, Timer.getFPGATimestamp(), stdev)
 
     def resetSubsystems(self) -> None:
         """
@@ -120,6 +120,7 @@ class SubsystemWrapper(Subsystem):
         Moves to safe positions without zeroing sensors.
         """
         self.resetBeforeTeleopCommand.schedule()
+        self.intake.startIntake()
         self.shooter.shooterCalibrationData = self.shooter.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
 
     def resetBeforeAutonomous(self) -> None:

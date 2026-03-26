@@ -33,10 +33,10 @@ class Limelight:
         tableNames: list[str] = ["limelight-lside", "limelight-rside"]
 
         # the measured standard deviation of a single limelight at a known reference area
-        standardDeviationRef: tuple[float, float, float] = (0.05, 0.05, 0.01) # meters, meters, radians
+        standardDeviationRef: tuple[float, float, float] = (0.5, 0.5, 0.5) # meters, meters, radians
 
         # the reference target area at which the standard deviation was measured
-        targetAreaRef: float = 0.05 # percentage
+        targetAreaRef: float = 0.93 # percentage
 
     class States:
         pass

@@ -68,7 +68,7 @@ class RobotContainer:
         self.climber: ClimbingSubsystem
         self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
-        self.operatorController: CommandJoystick
+        self.operatorController: CommandXboxController
         self.driveInputScalar: float
         self.filteredInputs: list[float] = [0.0, 0.0, 0.0]
 
@@ -148,6 +148,7 @@ class RobotContainer:
         """Instantiate the robot's control objects"""
         
         self.drivingController = CommandXboxController(0)
+        self.operatorController = CommandXboxController(1)
         self.driveInputScalar = 0.5
 
         # so i can test the driving without the program errroring out
@@ -162,6 +163,10 @@ class RobotContainer:
         NamedCommands.registerCommand("marker1", PrintCommand("marker1"))
         NamedCommands.registerCommand("marker2", PrintCommand("marker2"))
         NamedCommands.registerCommand("Hello", PrintCommand("Hello"))
+        NamedCommands.registerCommand("Extend Intake", InstantCommand(lambda: self.intake.extendIntake()))
+        NamedCommands.registerCommand("Extend Intake", InstantCommand(lambda: self.intake.extendIntake()))
+        NamedCommands.registerCommand("Start Intake", InstantCommand(lambda: self.intake.startIntake()))
+        NamedCommands.registerCommand("Stop Intake", InstantCommand(lambda: self.intake.stopIntake()))
         #TODO add other commands as needed
 
     def inputShaper(self, x: float, y: float):
@@ -275,6 +280,30 @@ class RobotContainer:
         )
 
         #TODO add other button bindings as needed
+
+        self.operatorController.x().onTrue(
+            InstantCommand(lambda: self.intake.extendIntake())
+        )
+
+        self.operatorController.a().onTrue(
+            InstantCommand(lambda: self.intake.retractIntake())
+        )
+
+        self.operatorController.povDown().onTrue(
+            InstantCommand(lambda: self.shooter.reverseConveyor()).alongWith(
+                InstantCommand(lambda: self.intake.reverseIntake())
+            )
+        ).onFalse(
+            InstantCommand(lambda: self.shooter.stopConveyor()).alongWith(
+                InstantCommand(lambda: self.intake.startIntake())
+            )
+        )
+
+        self.operatorController.rightTrigger().onTrue(
+            InstantCommand(lambda: self.shooter.startConveyor())
+        ).onFalse(
+            InstantCommand(lambda: self.shooter.stopConveyor())
+        )
 
     def getAutonomousCommand(self) -> Command:
         return self.autoChooser.getSelected()

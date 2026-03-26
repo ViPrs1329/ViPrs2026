@@ -101,7 +101,7 @@ class ShooterSubsystem(Subsystem):
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
         self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
             
-        self.startConveyor()
+        # self.startConveyor()
         # self.angleTurret(1)
 
     def angleTurret(self, position: float) -> None:
@@ -121,9 +121,18 @@ class ShooterSubsystem(Subsystem):
 
     def startConveyor(self):
         self.towerConveyor.set_control(DutyCycleOut(0.7, True))
+        self.frontConveyor.set_control(DutyCycleOut(0.6, True))
+        self.backConveyor.set_control(DutyCycleOut(-0.6, True))
 
     def stopConveyor(self):
         self.towerConveyor.stopMotor()
+        self.frontConveyor.stopMotor()
+        self.backConveyor.stopMotor()
+
+    def reverseConveyor(self):
+        self.towerConveyor.set_control(DutyCycleOut(-0.7, True))
+        self.frontConveyor.set_control(DutyCycleOut(-0.6, True))
+        self.backConveyor.set_control(DutyCycleOut(0.6, True))
 
     def loadCalibrationData(self, filePath) -> list[dict[str, float]]:
         data: list[dict[str, float]] = []

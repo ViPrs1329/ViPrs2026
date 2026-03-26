@@ -3,6 +3,7 @@ import wpilib
 import commands2
 from robotContainer import RobotContainer
 import os
+import wpinet
 
 class MyRobot(commands2.TimedCommandRobot):
 
@@ -14,6 +15,13 @@ class MyRobot(commands2.TimedCommandRobot):
 
         self.robotContainer: RobotContainer
         self.autonomousCommand: commands2.Command | None
+
+        wpinet.PortForwarder.getInstance().add(5800, "limelight-lside.local", 5801) # Config
+        wpinet.PortForwarder.getInstance().add(5802, "limelight-lside.local", 5802) # Stream
+        wpinet.PortForwarder.getInstance().add(5803, "limelight-rside.local", 5801) # Config
+        wpinet.PortForwarder.getInstance().add(5804, "limelight-rside.local", 5802) # Stream
+        wpinet.PortForwarder.getInstance().add(5805, "limelight-front.local", 5801) # Config
+        wpinet.PortForwarder.getInstance().add(5806, "limelight-front.local", 5802) # Stream
 
         try:
             self.robotContainer = RobotContainer()
@@ -50,7 +58,7 @@ class MyRobot(commands2.TimedCommandRobot):
     def disabledPeriodic(self):
         pass
 
-    def teleopInit(self): 
+    def teleopInit(self):
         """This function is called once each time the robot enters teleoperated mode."""
         if self.autonomousCommand is not None:
             self.autonomousCommand.cancel()
