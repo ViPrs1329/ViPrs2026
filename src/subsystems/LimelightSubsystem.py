@@ -5,6 +5,7 @@ from ntcore import NetworkTable
 from wpimath.geometry import Pose2d
 from wpimath.geometry import Rotation2d
 from wpimath.geometry import Transform2d
+from wpimath.filter import LinearFilter
 
 from constants import Limelight
 
@@ -19,6 +20,10 @@ class LimelightSubsystem(Subsystem):
         for name in Limelight.Consts.tableNames:
             table: NetworkTable = NetworkTableInstance.getDefault().getTable(name)
             self.tables.append(table)
+
+        self.filterx = LinearFilter.singlePoleIIR(0.1, 0.02)
+        self.filtery = LinearFilter.singlePoleIIR(0.1, 0.02)
+        self.filterr = LinearFilter.singlePoleIIR(0.1, 0.02)
 
     def canSeeTarget(self) -> bool:
         """
@@ -62,6 +67,7 @@ class LimelightSubsystem(Subsystem):
                 Limelight.Consts.standardDeviationRef[1] / sqrt(Limelight.Consts.targetAreaRef / totalWeight),
                 Limelight.Consts.standardDeviationRef[2] / sqrt(Limelight.Consts.targetAreaRef / totalWeight)
             )
+            filteredPose = Pose2d(self.filterx.calculate(robotPose.X()), self.filtery.calculate(robotPose.Y()), self.filterr.calculate(robotPose.rotation().radians))
             return robotPose, stdev
         else:
             return None, None

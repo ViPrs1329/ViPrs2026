@@ -49,6 +49,8 @@ from commands.gotoFeeder import GoToFeeder
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
 
+from commands.shoot import Shoot
+
 from numpy import sqrt
 from typing import Callable
 
@@ -164,9 +166,10 @@ class RobotContainer:
         NamedCommands.registerCommand("marker2", PrintCommand("marker2"))
         NamedCommands.registerCommand("Hello", PrintCommand("Hello"))
         NamedCommands.registerCommand("Extend Intake", InstantCommand(lambda: self.intake.extendIntake()))
-        NamedCommands.registerCommand("Extend Intake", InstantCommand(lambda: self.intake.extendIntake()))
+        NamedCommands.registerCommand("Retract Intake", InstantCommand(lambda: self.intake.retractIntake()))
         NamedCommands.registerCommand("Start Intake", InstantCommand(lambda: self.intake.startIntake()))
         NamedCommands.registerCommand("Stop Intake", InstantCommand(lambda: self.intake.stopIntake()))
+        NamedCommands.registerCommand("Shoot", Shoot(self.shooter, self.drivetrain).withTimeout(10))
         #TODO add other commands as needed
 
     def inputShaper(self, x: float, y: float):
@@ -217,8 +220,41 @@ class RobotContainer:
             alpha * current[2] + (1 - alpha) * self.filteredInputs[2]
         )
 
+    def resetPosition(self):
+        inverted = (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed
+        dir = self.drivetrain.get_operator_forward_direction()
+        pose: Pose2d = Pose2d(0.43815, 0.43815, dir)
+        if inverted:
+            pose = Pose2d(16.102838, 7.631176, dir)
+        self.drivetrain.reset_pose(pose)
+
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
+        self.maxSpeed = (
+            TunerConstants.speed_at_12_volts
+        )  # speed_at_12_volts desired top speed
+        self.maxAngularRate = rotationsToRadians(
+            0.75
+        )  # 3/4 rotations per second max angular velocity
+
+        self.drive = (
+            swerve.requests.FieldCentric()
+            .with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
+            .with_rotational_deadband(
+                self.maxAngularRate * 0.25 * self.driveInputScalar
+            )  # Add a 3% deadband
+            .with_drive_request_type(
+                swerve.SwerveModule.DriveRequestType.VELOCITY
+            )  # Use open-loop control for drive motors
+        )
+        self.brake = swerve.requests.SwerveDriveBrake()
+        self.point = swerve.requests.PointWheelsAt()
+        self.forwardStraight = (
+            swerve.requests.RobotCentric()
+            .with_drive_request_type(
+                swerve.SwerveModule.DriveRequestType.OPEN_LOOP_VOLTAGE
+            )
+        )
                
         self.drivetrain.setDefaultCommand(
             self.drivetrain.apply_request(
@@ -257,6 +293,10 @@ class RobotContainer:
         # Bind the reset gyro command to the X button on the controller
         self.drivingController.x().onTrue(
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
+        )
+
+        self.drivingController.povUp().onTrue(
+            InstantCommand(lambda: self.resetPosition())
         )
 
         self.drivingController.rightTrigger().onTrue(
@@ -299,17 +339,15 @@ class RobotContainer:
             )
         )
 
-        self.operatorController.rightTrigger().onTrue(
-            InstantCommand(lambda: self.shooter.startConveyor())
-        ).onFalse(
-            InstantCommand(lambda: self.shooter.stopConveyor())
+        self.operatorController.rightTrigger().whileTrue(
+            Shoot(self.shooter, self.drivetrain)
         )
 
-        self.operatorController.leftTrigger().onTrue(
-            InstantCommand(lambda: self.shooter.shoot())
-        ).onFalse(
-            InstantCommand(lambda: self.shooter.stopShooting())
-        )
+        # self.operatorController.leftTrigger().onTrue(
+        #     InstantCommand(lambda: self.shooter.shoot())
+        # ).onFalse(
+        #     InstantCommand(lambda: self.shooter.stopShooting())
+        # )
 
     def getAutonomousCommand(self) -> Command:
         return self.autoChooser.getSelected()

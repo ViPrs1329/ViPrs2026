@@ -3,32 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4491866438356165,
-        "y": 7.082726883561644
+        "x": 7.648944365192582,
+        "y": 4.832722891566265
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7531874626729156,
-        "y": 6.959026031625478
+        "x": 7.6580481927710835,
+        "y": 8.264024096385542
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "lt collect end"
     },
     {
       "anchor": {
-        "x": 1.607748287671233,
-        "y": 7.3081121575342465
+        "x": 1.48389156626506,
+        "y": 5.859927710843374
       },
       "prevControl": {
-        "x": 1.8569526327395613,
-        "y": 7.288182420981408
+        "x": 2.344094151212553,
+        "y": 7.961883024251071
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3493775933609951,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.6514522821576793,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +51,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -53.0
+    "rotation": 147.34101586718893
   },
   "reversed": false,
-  "folder": "Testing",
+  "folder": "New Folder",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": -53.0
+    "velocity": 0,
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

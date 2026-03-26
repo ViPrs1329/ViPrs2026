@@ -30,10 +30,10 @@ class Limelight:
 
     class Consts:
         #TODO update these names to match the limelights on the robot
-        tableNames: list[str] = ["limelight-lside", "limelight-rside"]
+        tableNames: list[str] = ["limelight-lside"] #, "limelight-rside"]
 
         # the measured standard deviation of a single limelight at a known reference area
-        standardDeviationRef: tuple[float, float, float] = (0.5, 0.5, 0.5) # meters, meters, radians
+        standardDeviationRef: tuple[float, float, float] = (1, 1, 1) # meters, meters, radians
 
         # the reference target area at which the standard deviation was measured
         targetAreaRef: float = 0.93 # percentage

@@ -1,5 +1,5 @@
 from commands2 import Subsystem
-from wpilib import SmartDashboard, Timer
+from wpilib import SmartDashboard, Timer, DriverStation
 
 from phoenix6.hardware import TalonFX, CANcoder
 from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC, DutyCycleOut, PositionVoltage
@@ -12,7 +12,8 @@ from constants import Shooter
 
 from tuning.tunable import TunableDouble
 
-from wpimath.geometry import Pose2d
+from wpimath.geometry import Pose2d, Translation2d, Transform2d
+from wpimath.kinematics import ChassisSpeeds
 
 import csv
 
@@ -20,6 +21,11 @@ import csv
 class ShooterSubsystem(Subsystem):
     def __init__(self) -> None:
         super().__init__()
+
+        self.flipped = False
+        self.setFlipped()
+
+        self.shootingToHub = False
 
         self.turretMotor: TalonFX = TalonFX(Shooter.Consts.turretId)
         self.hoodMotor: TalonFX = TalonFX(Shooter.Consts.hoodId)
@@ -97,15 +103,25 @@ class ShooterSubsystem(Subsystem):
         self.distTunable: TunableDouble = TunableDouble("Distance Tunable", 0, "Shooter")
         self.turretTunable: TunableDouble = TunableDouble("Target Turret", 0, "Shooter")
 
+        self.ghostTarget = Pose2d()
+        self.ghostTargetPub = self.shooterTable.getStructTopic("Ghost Target", Pose2d).publish()
+
         self._last_publish_time = Timer.getFPGATimestamp()
 
-        self.shooterCalibrationData: list[dict[str, float]] = self.loadCalibrationData("tuning/shooterTable.csv")
+        self.shooterCalibrationData: list[dict[str, float]] = self.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
         self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
-        self.calibration = self.lookupCalibration(0)
+        self.calibration = self.lookupCalibration(Pose2d(), ChassisSpeeds())
             
         # self.startConveyor()
         # self.angleTurret(1)
+
+    def setFlipped(self):
+        if (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed:
+            self.flipped = True
+
+        else:
+            self.flipped = False
 
     def angleTurret(self, position: float) -> None:
         self.turretOut.with_position(position)
@@ -150,10 +166,8 @@ class ShooterSubsystem(Subsystem):
         # Crucial: Ensure the list is sorted by distance for the search algorithm
         data.sort(key=lambda x: x['distance'])
         return data
-    
-    def lookupCalibration(self, pose: Pose2d) -> dict[str, float]:
-        if pose.X()
-        distance = pose.relativeTo()
+
+    def fetchDatatable(self, distance: float):
         # 1. Handle Lower Bound Clamping
         if distance <= self.shooterCalibrationData[0]['distance']:
             return self.shooterCalibrationData[0].copy()
@@ -184,18 +198,75 @@ class ShooterSubsystem(Subsystem):
             results[col] = y0 + t * (y1 - y0)
             
         return results
+    
+    def lookupCalibration(self, pose: Pose2d, speeds: ChassisSpeeds) -> dict[str, float]:
+        # if (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed:
+        #     self.flipped = True
+        
+        # else: self.flipped = False
 
-    def updateDistance(self, distance: float) -> None:
-        self.calibration = self.lookupCalibration(distance)
+        # print(self.flipped)
 
-        # self.setRPM(calibration['targetRPM'])
-        self.setRPM(self.rpmTunable.get())
-        # self.angleHood(calibration['hoodAngle'])
-        self.angleHood(self.hoodTunable.get())
+        target = Pose2d()
+
+        if pose.X() < 4.625 and self.flipped == False:
+            target = Pose2d(4.625, 4, 0)
+            self.shootingToHub = True
+
+        elif pose.X() > 11.915 and self.flipped == True:
+            target = Pose2d(11.915, 4, 0)
+            self.shootingToHub = True
+
+        elif self.flipped == False:
+            target = Pose2d(2.625, pose.Y(), 0)
+            self.shootingToHub = False
+
+        else:
+            target = Pose2d(13.915, pose.Y(), 0)
+            self.shootingToHub = False
+
+        results: dict[str, float]
+        # if self.shootingToHub:
+
+        #     distance = pose.relativeTo(target).translation().norm()
+
+        #     results = self.fetchDatatable(distance)
+
+        #     if self.flipped:
+
+        #         target += Transform2d(speeds.vx, speeds.vy, 0) * results["TOF"]
+            
+        #     else:
+        #         target += Transform2d(-speeds.vx, -speeds.vy, 0) * results["TOF"]
+
+        #     distance = pose.relativeTo(target).translation().norm()
+
+        #     results = self.fetchDatatable(distance)
+
+        #     # self.ghostTarget = target
+        #     # self.ghostTargetPub.set(self.ghostTarget)
+
+        # else:
+        distance = pose.relativeTo(target).translation().norm()
+        results = self.fetchDatatable(distance)
+            
+        self.ghostTarget = target
+        self.ghostTargetPub.set(self.ghostTarget)
+            
+        return results
+
+    def updateDistance(self, pose: Pose2d, speeds: ChassisSpeeds, hood = False) -> None:
+        self.calibration = self.lookupCalibration(pose, speeds)
+
+        self.setRPM(self.calibration['targetRPM'])
+        # self.setRPM(self.rpmTunable.get())
+        if hood:
+            self.angleHood(self.calibration['hoodAngle'])
+        # self.angleHood(self.hoodTunable.get())
         # self.angleTurret(self.turretTunable.get())
 
     def periodic(self) -> None:
-        self.updateDistance(self.distTunable.get())
+        # self.updateDistance(self.distTunable.get())
 
 
         if Timer.getFPGATimestamp() - self._last_publish_time >= 0.25:

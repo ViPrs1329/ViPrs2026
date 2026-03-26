@@ -14,8 +14,8 @@ class boilerCommand(Command):
         self.drivetrain: CommandSwerveDrivetrain = drivetrain
         self.driveRequest: FieldCentric = driveRequest
 
-        self.ghostTarget: Pose2d = Pose2d()
-        self.ghostTargetPub: StructPublisher = self.shooter.shooterTable.getStructTopic("Ghost Target", Pose2d).publish()
+        # self.ghostTarget: Pose2d = Pose2d()
+        # self.ghostTargetPub: StructPublisher = self.shooter.shooterTable.getStructTopic("Ghost Target", Pose2d).publish()
 
     def initialize(self):
         # Code to initialize the command

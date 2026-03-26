@@ -16,7 +16,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self.robotContainer: RobotContainer
         self.autonomousCommand: commands2.Command | None
 
-        wpinet.PortForwarder.getInstance().add(5800, "limelight-lside.local", 5801) # Config
+        wpinet.PortForwarder.getInstance().add(5801, "limelight-lside.local", 5801) # Config
         wpinet.PortForwarder.getInstance().add(5802, "limelight-lside.local", 5802) # Stream
         wpinet.PortForwarder.getInstance().add(5803, "limelight-rside.local", 5801) # Config
         wpinet.PortForwarder.getInstance().add(5804, "limelight-rside.local", 5802) # Stream

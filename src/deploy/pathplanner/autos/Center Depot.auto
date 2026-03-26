@@ -5,33 +5,33 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Side 1"
+            "name": "Extend Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Side 2"
+            "pathName": "Center 2 Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Side 3"
+            "pathName": "Depot 2 Shoot"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Side 4"
+            "name": "Shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Testing",
+  "folder": "Comp",
   "choreoAuto": false
 }
