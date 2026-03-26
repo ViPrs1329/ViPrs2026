@@ -6,11 +6,13 @@ from phoenix6.controls import PositionTorqueCurrentFOC, VelocityTorqueCurrentFOC
 from phoenix6.configs import TalonFXConfiguration, CurrentLimitsConfigs, MotionMagicConfigs, TorqueCurrentConfigs, ClosedLoopGeneralConfigs, SoftwareLimitSwitchConfigs, FeedbackConfigs
 from phoenix6.signals import GravityTypeValue, StaticFeedforwardSignValue, FeedbackSensorSourceValue
 
-from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher
+from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher, StructPublisher
 
 from constants import Shooter
 
 from tuning.tunable import TunableDouble
+
+from wpimath.geometry import Pose2d
 
 import csv
 
@@ -97,9 +99,10 @@ class ShooterSubsystem(Subsystem):
 
         self._last_publish_time = Timer.getFPGATimestamp()
 
-        self.shooterCalibrationData: list[dict[str, float]] = self.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
+        self.shooterCalibrationData: list[dict[str, float]] = self.loadCalibrationData("tuning/shooterTable.csv")
         self.distances = [i['distance'] for i in self.shooterCalibrationData]
         self.columns = [k for k in self.shooterCalibrationData[0].keys() if k != 'distance']
+        self.calibration = self.lookupCalibration(0)
             
         # self.startConveyor()
         # self.angleTurret(1)
@@ -148,7 +151,9 @@ class ShooterSubsystem(Subsystem):
         data.sort(key=lambda x: x['distance'])
         return data
     
-    def lookupCalibration(self, distance: float) -> dict[str, float]:
+    def lookupCalibration(self, pose: Pose2d) -> dict[str, float]:
+        if pose.X()
+        distance = pose.relativeTo()
         # 1. Handle Lower Bound Clamping
         if distance <= self.shooterCalibrationData[0]['distance']:
             return self.shooterCalibrationData[0].copy()
@@ -181,7 +186,8 @@ class ShooterSubsystem(Subsystem):
         return results
 
     def updateDistance(self, distance: float) -> None:
-        calibration = self.lookupCalibration(distance)
+        self.calibration = self.lookupCalibration(distance)
+
         # self.setRPM(calibration['targetRPM'])
         self.setRPM(self.rpmTunable.get())
         # self.angleHood(calibration['hoodAngle'])

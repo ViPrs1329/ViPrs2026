@@ -121,7 +121,7 @@ class SubsystemWrapper(Subsystem):
         """
         self.resetBeforeTeleopCommand.schedule()
         self.intake.startIntake()
-        self.shooter.shooterCalibrationData = self.shooter.loadCalibrationData("/home/lvuser/py/tuning/shooterTable.csv")
+        self.shooter.shooterCalibrationData = self.shooter.loadCalibrationData("tuning/shooterTable.csv")
 
     def resetBeforeAutonomous(self) -> None:
         """

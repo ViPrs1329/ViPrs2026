@@ -305,6 +305,12 @@ class RobotContainer:
             InstantCommand(lambda: self.shooter.stopConveyor())
         )
 
+        self.operatorController.leftTrigger().onTrue(
+            InstantCommand(lambda: self.shooter.shoot())
+        ).onFalse(
+            InstantCommand(lambda: self.shooter.stopShooting())
+        )
+
     def getAutonomousCommand(self) -> Command:
         return self.autoChooser.getSelected()
 
