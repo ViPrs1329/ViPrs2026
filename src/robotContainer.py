@@ -220,12 +220,31 @@ class RobotContainer:
             alpha * current[2] + (1 - alpha) * self.filteredInputs[2]
         )
 
-    def resetPosition(self):
+    def resetPosition(self, position: str):
         inverted = (DriverStation.getAlliance() or DriverStation.Alliance.kBlue) == DriverStation.Alliance.kRed
         dir = self.drivetrain.get_operator_forward_direction()
-        pose: Pose2d = Pose2d(0.43815, 0.43815, dir)
-        if inverted:
-            pose = Pose2d(16.102838, 7.631176, dir)
+        pose: Pose2d = Pose2d()
+        match position:
+            case "br":
+                pose = Pose2d(0.43815, 0.43815, dir)
+                if inverted:
+                    pose = Pose2d(16.102838, 7.631176, dir)
+
+            case "bl":
+                pose = Pose2d(0.43815, 7.631176, dir)
+                if inverted:
+                    pose = Pose2d(16.102838, 0.43815, dir)
+
+            case "tl":
+                pose = Pose2d(4.626694, 7.631176, dir)
+                if inverted:
+                    pose = Pose2d(11.915394, 0.43815, dir)
+
+            case "tr":
+                pose = Pose2d(4.626694, 0.43815, dir)
+                if inverted:
+                    pose = Pose2d(11.915394, 7.631176, dir)
+
         self.drivetrain.reset_pose(pose)
 
     def configureButtonBindings(self):
@@ -295,8 +314,20 @@ class RobotContainer:
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
-        self.drivingController.povUp().onTrue(
-            InstantCommand(lambda: self.resetPosition())
+        self.drivingController.povRight().onTrue(
+            InstantCommand(lambda: self.resetPosition("br"))
+        )
+
+        self.drivingController.povLeft().onTrue(
+            InstantCommand(lambda: self.resetPosition("bl"))
+        )
+
+        self.drivingController.rightBumper().onTrue(
+            InstantCommand(lambda: self.resetPosition("tr"))
+        )
+
+        self.drivingController.leftBumper().onTrue(
+            InstantCommand(lambda: self.resetPosition("tl"))
         )
 
         self.drivingController.rightTrigger().onTrue(
