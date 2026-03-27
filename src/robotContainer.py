@@ -76,8 +76,8 @@ class RobotContainer:
 
         self.initSubsystems()
         self.initControls()
-        self.initAutoChooser()
         self.initCommands()
+        self.initAutoChooser()
         self.configureButtonBindings()
 
         self.maxSpeed = (
@@ -165,10 +165,10 @@ class RobotContainer:
         NamedCommands.registerCommand("marker1", PrintCommand("marker1"))
         NamedCommands.registerCommand("marker2", PrintCommand("marker2"))
         NamedCommands.registerCommand("Hello", PrintCommand("Hello"))
-        NamedCommands.registerCommand("Extend Intake", InstantCommand(lambda: self.intake.extendIntake()))
-        NamedCommands.registerCommand("Retract Intake", InstantCommand(lambda: self.intake.retractIntake()))
-        NamedCommands.registerCommand("Start Intake", InstantCommand(lambda: self.intake.startIntake()))
-        NamedCommands.registerCommand("Stop Intake", InstantCommand(lambda: self.intake.stopIntake()))
+        NamedCommands.registerCommand("ExtendIntake", InstantCommand(lambda: self.intake.extendIntake()))
+        NamedCommands.registerCommand("RetractIntake", InstantCommand(lambda: self.intake.retractIntake()))
+        NamedCommands.registerCommand("StartIntake", InstantCommand(lambda: self.intake.startIntake()))
+        NamedCommands.registerCommand("StopIntake", InstantCommand(lambda: self.intake.stopIntake()))
         NamedCommands.registerCommand("Shoot", Shoot(self.shooter, self.drivetrain).withTimeout(10))
         #TODO add other commands as needed
 
@@ -342,9 +342,9 @@ class RobotContainer:
             InstantCommand(self.goMedium)
         )
 
-        self.drivingController.leftBumper().onTrue(
-            GoToFeeder(self.drivetrain)
-        )
+        # self.drivingController.leftBumper().onTrue(
+        #     GoToFeeder(self.drivetrain)
+        # )
 
         self.drivetrain.register_telemetry(
             lambda state: self._logger.telemeterize(state)

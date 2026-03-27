@@ -26,8 +26,8 @@ class ClimbingSubsystem(Subsystem):
         )
         # slot0 for pulling the robot up
         # slot1 for raising the climbing arm (there is no robot to lift so no feed forward)
-        climberConfigs.slot0.with_k_p(1).with_k_i(0).with_k_d(0).with_k_g(0).with_gravity_type(signals.spn_enums.GravityTypeValue.ELEVATOR_STATIC)
-        climberConfigs.slot1.with_k_p(1).with_k_i(0).with_k_d(0)
+        climberConfigs.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_g(0).with_gravity_type(signals.spn_enums.GravityTypeValue.ELEVATOR_STATIC)
+        climberConfigs.slot1.with_k_p(0).with_k_i(0).with_k_d(0).with_k_g(0).with_gravity_type(signals.spn_enums.GravityTypeValue.ELEVATOR_STATIC)
         
         self.climbingMotorLeft.setNeutralMode(signals.NeutralModeValue.BRAKE)
         self.climbingMotorRight.setNeutralMode(signals.NeutralModeValue.BRAKE)
@@ -40,13 +40,21 @@ class ClimbingSubsystem(Subsystem):
         self.climbingMotorLeft.set_position(0.0)
         self.climbingMotorRight.set_position(0.0)
 
-        self.targetPosition: float = 0.0
-        self.currentSlot: int = 1
 
-    def switchToSlot(self, slot: int = 0):
-        self.currentSlot = slot
-
-    def periodic(self) -> None:
-        positionRequest = controls.PositionTorqueCurrentFOC(position=self.targetPosition, slot=self.currentSlot)
+    def climb(self):
+        positionRequest = controls.PositionTorqueCurrentFOC(position=10, slot=0)
         self.climbingMotorLeft.set_control(positionRequest)
         self.climbingMotorRight.set_control(positionRequest)
+
+    def climberUp(self):
+        positionRequest = controls.PositionTorqueCurrentFOC(position=20, slot=1)
+        self.climbingMotorLeft.set_control(positionRequest)
+        self.climbingMotorRight.set_control(positionRequest)
+
+    def climberDown(self):
+        positionRequest = controls.PositionTorqueCurrentFOC(position=0, slot=1)
+        self.climbingMotorLeft.set_control(positionRequest)
+        self.climbingMotorRight.set_control(positionRequest)
+
+    def periodic(self) -> None:
+        pass

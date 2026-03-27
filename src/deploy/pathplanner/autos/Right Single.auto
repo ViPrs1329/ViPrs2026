@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L Collect"
+            "pathName": "R Collect"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "L Goto Shoot"
+            "pathName": "R Goto Shoot"
           }
         },
         {
