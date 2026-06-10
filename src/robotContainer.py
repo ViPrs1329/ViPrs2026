@@ -91,8 +91,6 @@ class RobotContainer:
             )
         )
 
-        self.magLimiter = SlewRateLimiter(3)
-
         self._logger = Telemetry(self.maxSpeed)
         
     def initAutoChooser(self):
@@ -142,9 +140,8 @@ class RobotContainer:
 
         d = min(d, 1)
         factor: float = d ** 3
-        limitedFactor = self.magLimiter.calculate(factor)
 
-        return (limitedFactor * unitx, limitedFactor * unity)
+        return (factor * unitx, factor * unity)
 
     def rotInputShaper(self, x: float):
         """Adds a gain curve to the rotation input"""
@@ -179,7 +176,8 @@ class RobotContainer:
                         -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[1] * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
-                        -self.rotInputShaper(self.drivingController.getRightY()) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
+                        # change this to get right x. it is currently getting the right trigger axis since my computer is swapping them around
+                        -self.rotInputShaper(self.drivingController.getRightTriggerAxis()) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
                     ) # Drive counterclockwise with negative X (left)
                 )
             )
@@ -206,7 +204,9 @@ class RobotContainer:
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
-        self.drivingController.rightTrigger().onTrue(
+        # change to right trigger
+        # it is right bumper since my computer is swapping them
+        self.drivingController.rightBumper().onTrue(
             InstantCommand(self.goSlow)
         ).onFalse(
             InstantCommand(self.goMedium)
