@@ -37,14 +37,6 @@ from commands2.button import Trigger
 from phoenix6 import swerve
 
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
-from subsystems.LimelightSubsystem import LimelightSubsystem
-from subsystems.IntakeSubsystem import IntakeSubsystem
-from subsystems.shooterSubsystem import ShooterSubsystem
-from subsystems.climberSubsystem import ClimbingSubsystem
-
-from controlsSubsystemWrapper import SubsystemWrapper
-
-from commands.gotoFeeder import GoToFeeder
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -62,11 +54,6 @@ class RobotContainer:
         #TODO add other subsystems as needed
         self.autoChooser: SendableChooser
         self.drivetrain: CommandSwerveDrivetrain
-        self.limelight: LimelightSubsystem
-        self.intake: IntakeSubsystem
-        self.shooter: ShooterSubsystem
-        self.climber: ClimbingSubsystem
-        self.subsystemWrapper: SubsystemWrapper
         self.drivingController: CommandXboxController
         self.operatorController: CommandJoystick
         self.driveInputScalar: float
@@ -118,31 +105,12 @@ class RobotContainer:
         # create subsystems
         # self.drivetrain = DriveSubsystem(self.fns.getOdometry)
         self.drivetrain = TunerConstants.create_drivetrain()
-        self.limelight = LimelightSubsystem()
-        self.intake = IntakeSubsystem()
-        self.shooter = ShooterSubsystem()
-        self.climber = ClimbingSubsystem()
         
         #TODO add other subsystems as needed
-
-        # create a wrapper for the subsystems
-        self.subsystemWrapper = SubsystemWrapper(
-            self.drivetrain, 
-            self.limelight, 
-            self.shooter,
-            self.climber,
-            self.intake
-            #TODO add other subsystems as needed
-        )
 
         # register subsystems with the command scheduler
         #TODO register other subsystems as needed
         CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
-        CommandScheduler.getInstance().registerSubsystem(self.limelight)
-        CommandScheduler.getInstance().registerSubsystem(self.intake)
-        CommandScheduler.getInstance().registerSubsystem(self.shooter)
-        CommandScheduler.getInstance().registerSubsystem(self.climber)
-        CommandScheduler.getInstance().registerSubsystem(self.subsystemWrapper)
         
     def initControls(self):
         """Instantiate the robot's control objects"""
@@ -198,20 +166,6 @@ class RobotContainer:
         self.drive = self.drive.with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
         self.drive = self.drive.with_rotational_deadband(self.maxAngularRate * 0.25 * self.driveInputScalar)
 
-    def updateFilteredInputs(self, targetInputs: list[float]):
-        """Updates the filtered speeds using a simple low-pass filter."""
-        alpha: float = 0.9  # Smoothing factor between 0 and 1
-        current = targetInputs
-        self.filteredInputs[0] = (
-            alpha * current[0] + (1 - alpha) * self.filteredInputs[0]
-        )
-        self.filteredInputs[1] = (
-            alpha * current[1] + (1 - alpha) * self.filteredInputs[1]
-        )
-        self.filteredInputs[2] = (
-            alpha * current[2] + (1 - alpha) * self.filteredInputs[2]
-        )
-
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
                
@@ -219,15 +173,13 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                       -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[0] * self.maxSpeed * self.driveInputScalar
-                       # -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
+                       -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[0] * self.maxSpeed * self.driveInputScalar
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[1] * self.maxSpeed * self.driveInputScalar
-                        # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
+                        -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[1] * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
-                        -self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
+                        -self.rotInputShaper(self.drivingController.getRightY()) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
                     ) # Drive counterclockwise with negative X (left)
                 )
             )
@@ -264,10 +216,6 @@ class RobotContainer:
             InstantCommand(self.goFast)
         ).onFalse(
             InstantCommand(self.goMedium)
-        )
-
-        self.drivingController.leftBumper().onTrue(
-            GoToFeeder(self.drivetrain)
         )
 
         self.drivetrain.register_telemetry(

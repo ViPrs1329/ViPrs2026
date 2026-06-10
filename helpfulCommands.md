@@ -26,3 +26,8 @@ pip install robotpy[package name]
 ```powershell
 robotpy installer install robotpy
 ```
+
+### force activate virtural environment
+```bash
+source .venv/bin/activate
+```
