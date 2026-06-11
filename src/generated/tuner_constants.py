@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, overload
 from phoenix6 import CANBus, configs, hardware, signals, swerve, units
 from wpimath.units import inchesToMeters
+from robotPhysicalConstants import DrivePhysicalConstants as DPC
 
 if TYPE_CHECKING:
     from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
@@ -18,12 +19,12 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     _steer_gains = (
         configs.Slot0Configs()
-        .with_k_p(50)
-        .with_k_i(0)
-        .with_k_d(0)
-        .with_k_s(2.5)
-        .with_k_v(0)
-        .with_k_a(0.00564)
+        .with_k_p(DPC.steerKP)
+        .with_k_i(DPC.steerKI)
+        .with_k_d(DPC.steerKD)
+        .with_k_s(DPC.steerKS)
+        .with_k_v(DPC.steerKV)
+        .with_k_a(DPC.steerKA)
         .with_static_feedforward_sign(
             signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN
         )
@@ -32,12 +33,12 @@ class TunerConstants:
     # output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     _drive_gains = (
         configs.Slot0Configs()
-        .with_k_p(10)
-        .with_k_i(0)
-        .with_k_d(0)
-        .with_k_s(2.5)
-        .with_k_v(0.01)
-        .with_k_a(0.337)
+        .with_k_p(DPC.driveKP)
+        .with_k_i(DPC.driveKI)
+        .with_k_d(DPC.driveKD)
+        .with_k_s(DPC.driveKS)
+        .with_k_v(DPC.driveKV)
+        .with_k_a(DPC.driveKA)
     )
 
     # The closed-loop output type to use for the steer motors;
@@ -58,34 +59,34 @@ class TunerConstants:
 
     # The stator current at which the wheels start to slip;
     # This needs to be tuned to your individual robot
-    _slip_current: units.ampere = 120.0
+    _slip_current: units.ampere = DPC.driveCurrentLimit
 
     # Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     # Some configs will be overwritten; check the `with_*_initial_configs()` API documentation.
     _drive_initial_configs = configs.TalonFXConfiguration().with_current_limits(
         configs.CurrentLimitsConfigs()
-        .with_stator_current_limit(30.0)
+        .with_stator_current_limit(DPC.driveCurrentLimit)
         .with_stator_current_limit_enable(True)
         .with_supply_current_limit(40.0)
         .with_supply_current_limit_enable(True)
     ).with_motion_magic(
         configs.MotionMagicConfigs()
-        .with_motion_magic_cruise_velocity(85)
-        .with_motion_magic_acceleration((30-2.5) / 0.337) # should be approximately (Ilimit - ks) / ka
+        .with_motion_magic_cruise_velocity(100)
+        .with_motion_magic_acceleration(DPC.driveMotionMagicAcceleration)
         .with_motion_magic_jerk(500)
     )
     _steer_initial_configs = configs.TalonFXConfiguration().with_current_limits(
         configs.CurrentLimitsConfigs()
         # Swerve azimuth does not require much torque output, so we can set a relatively low
         # stator current limit to help avoid brownouts without impacting performance.
-        .with_stator_current_limit(80.0)
+        .with_stator_current_limit(DPC.steerCurrentLimit)
         .with_stator_current_limit_enable(True)
         .with_supply_current_limit(40.0)
         .with_supply_current_limit_enable(True)
     ).with_motion_magic(
         configs.MotionMagicConfigs()
         .with_motion_magic_cruise_velocity(85)
-        .with_motion_magic_acceleration((80-0.22) / 0.00564) # should be approximately (Ilimit - ks) / ka
+        .with_motion_magic_acceleration(DPC.steerMotionMagicAcceleration) # should be approximately (Ilimit - ks) / ka
         .with_motion_magic_jerk(500)
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()

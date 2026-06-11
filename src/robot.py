@@ -24,7 +24,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def robotPeriodic(self):
         commands2.CommandScheduler.getInstance().run()
-        print(time.perf_counter() - self.lasttime)
+        # print(time.perf_counter() - self.lasttime)
         self.lasttime = time.perf_counter()
 
         
