@@ -8,7 +8,7 @@ class DrivePhysicalConstants:
     wheelRadius: float = 0.0508 # meters
 
     driveCurrentLimit: float = 30.0 # A
-    steerCurrentLimit: float = 80.0 # A
+    steerCurrentLimit: float = 30.0 # A
 
     driveKP: float = 10 # A/(rot/s)
     driveKI: float = 0.1 # A/rot
@@ -45,5 +45,5 @@ class DrivePhysicalConstants:
     steerKA: float = steerKARad * 2 * math.pi + JSteer # A/(rot/s^2)
     steerMotionMagicAcceleration: float = (steerCurrentLimit - steerKS) / steerKA # (rot/s^2) # the approximate maximum acceleration of the motor
     
-print(DrivePhysicalConstants.steerKA)
+# print(DrivePhysicalConstants.steerKA, DrivePhysicalConstants.steerMotionMagicAcceleration)
 
