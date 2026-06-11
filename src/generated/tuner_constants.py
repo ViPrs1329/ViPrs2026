@@ -71,7 +71,7 @@ class TunerConstants:
         .with_supply_current_limit_enable(True)
     ).with_motion_magic(
         configs.MotionMagicConfigs()
-        .with_motion_magic_cruise_velocity(100)
+        .with_motion_magic_cruise_velocity(96.666666)
         .with_motion_magic_acceleration(DPC.driveMotionMagicAcceleration)
         .with_motion_magic_jerk(500)
     )
