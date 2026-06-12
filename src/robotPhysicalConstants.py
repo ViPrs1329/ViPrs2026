@@ -30,19 +30,19 @@ class DrivePhysicalConstants:
 
     ktDrive: float = 0.0197 # Nm/A
     ktSteer: float = 0.0197 # Nm/A
-    JDrive: float = 0.005
-    JSteer: float = 0.005
+    JDrive: float = 7.28e-5
+    JSteer: float = 7.28e-5
 
     # calculated from user input
     driveJRobot: float = robotMass * wheelRadius * wheelRadius # kg m^2 # The equivalent rotational inertia (J_robot) felt at the wheel axles due to the linear mass of the robot
-    driveJMotor: float = driveJRobot / (4 * driveGearRatio * driveGearRatio * driveEfficiency) # kg m^2 per motor # the approximate equivalent rotational inertia of the motor
+    driveJMotor: float = driveJRobot / (4 * driveGearRatio * driveGearRatio * driveEfficiency) + JDrive # kg m^2 per motor # the approximate equivalent rotational inertia of the motor
     driveKARad: float = driveJMotor / ktDrive # A/(rad/s^2)
     driveKA: float = driveKARad * 2 * math.pi # A/(rot/s^2)
     driveMotionMagicAcceleration: float = (driveCurrentLimit - driveKS) / driveKA # (rot/s^2) # the approximate maximum acceleration of the motor
     
-    steerJMotor: float = JTurret / (steerGearRatio * steerGearRatio * steerEfficiency)
+    steerJMotor: float = JTurret / (steerGearRatio * steerGearRatio * steerEfficiency) + JSteer
     steerKARad: float = steerJMotor / ktSteer # A/(rad/s^2)
-    steerKA: float = steerKARad * 2 * math.pi + JSteer # A/(rot/s^2)
+    steerKA: float = steerKARad * 2 * math.pi # A/(rot/s^2)
     steerMotionMagicAcceleration: float = (steerCurrentLimit - steerKS) / steerKA # (rot/s^2) # the approximate maximum acceleration of the motor
     
 # print(DrivePhysicalConstants.steerKA, DrivePhysicalConstants.steerMotionMagicAcceleration)
