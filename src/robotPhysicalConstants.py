@@ -1,5 +1,7 @@
 import math
 
+# This file calculates all of the feedforwards for the different mechanisms on the robot
+
 class DrivePhysicalConstants:
     # user input here
     robotMass: float = 68.0 # kg
