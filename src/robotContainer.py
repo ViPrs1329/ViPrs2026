@@ -37,6 +37,7 @@ from commands2.button import Trigger
 from phoenix6 import swerve
 
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
+from subsystems.intake import IntakeSubsystem
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -102,6 +103,7 @@ class RobotContainer:
         
         # create subsystems
         self.drivetrain = TunerConstants.create_drivetrain()
+        self.intake = IntakeSubsystem()
         
         #TODO add other subsystems as needed
 
@@ -199,9 +201,7 @@ class RobotContainer:
             self.drivetrain.runOnce(lambda: self.drivetrain.seed_field_centric())
         )
 
-        # change to right trigger
-        # it is right bumper since my computer is swapping them
-        self.drivingController.rightBumper().onTrue(
+        self.drivingController.leftBumper().onTrue(
             InstantCommand(self.goSlow)
         ).onFalse(
             InstantCommand(self.goMedium)
@@ -211,6 +211,12 @@ class RobotContainer:
             InstantCommand(self.goFast)
         ).onFalse(
             InstantCommand(self.goMedium)
+        )
+
+        self.drivingController.rightBumper().onTrue(
+            InstantCommand(self.intake.startIntake)
+        ).onFalse(
+            InstantCommand(self.intake.stopIntake)
         )
 
         self.drivetrain.register_telemetry(

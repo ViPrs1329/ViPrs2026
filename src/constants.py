@@ -19,10 +19,20 @@ from math import pi
 #     class States:
 #         pass
 
-class IntakeConsts:
+class Feeder:
     class CANids:
-        leftIntakeMotor: int = 21
-        rightIntakeMotor: int = 22
+        leftConveyor: int = 41
+        rightConveyor: int = 42
+        backConveyor: int = 43
+        kicker: int = 45
 
     class Consts:
-        intakeDutyCycle: float = 0.2
+        backConveyorDutyCycle: float = 0.2
+
+class Intake:
+    class CANids:
+        leftIntakeMotor: int = 22
+        rightIntakeMotor: int = 23
+
+    class Consts:
+        intakeDutyCycle: float = 0.35
