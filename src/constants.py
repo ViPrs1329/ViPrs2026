@@ -27,7 +27,9 @@ class Feeder:
         kicker: int = 45
 
     class Consts:
-        backConveyorDutyCycle: float = 0.2
+        backConveyorDutyCycle: float = -0.3
+        leftConveyorDutyCycle: float = -0.3
+        rightConveyorDutyCycle: float = 0.3
 
 class Intake:
     class CANids:
