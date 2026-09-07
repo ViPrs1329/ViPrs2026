@@ -39,6 +39,7 @@ from phoenix6 import swerve
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.intake import IntakeSubsystem
 from subsystems.feederSubsystem import FeederSubsystem
+from subsystems.shooterSubsystem import ShooterSubsystem
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -106,6 +107,7 @@ class RobotContainer:
         self.drivetrain = TunerConstants.create_drivetrain()
         self.intake = IntakeSubsystem()
         self.feeder = FeederSubsystem()
+        self.shooter = ShooterSubsystem()
         
         #TODO add other subsystems as needed
 
@@ -222,9 +224,9 @@ class RobotContainer:
         )
 
         self.drivingController.rightTrigger().onTrue(
-            InstantCommand(self.feeder.feedForward)
+            InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable()))
         ).onFalse(
-            InstantCommand(self.feeder.stopFeed)
+            InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter))
         )
 
         self.drivetrain.register_telemetry(

@@ -38,3 +38,8 @@ class Intake:
 
     class Consts:
         intakeDutyCycle: float = 0.35
+
+class Shooter:
+    class CANids:
+        shooter: int = 53
+        
