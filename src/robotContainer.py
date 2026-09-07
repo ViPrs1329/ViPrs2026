@@ -101,15 +101,10 @@ class RobotContainer:
         """Instantiate the robot's subsystems."""
         
         # create subsystems
-        # self.drivetrain = DriveSubsystem(self.fns.getOdometry)
         self.drivetrain = TunerConstants.create_drivetrain()
         
         #TODO add other subsystems as needed
 
-        # register subsystems with the command scheduler
-        #TODO register other subsystems as needed
-        CommandScheduler.getInstance().registerSubsystem(self.drivetrain)
-        
     def initControls(self):
         """Instantiate the robot's control objects"""
         
