@@ -42,4 +42,9 @@ class Intake:
 class Shooter:
     class CANids:
         shooter: int = 53
+
+class Turret:
+    class CANids:
+        turretMotor: int = 51
+        turretEncoder: int = 52
         

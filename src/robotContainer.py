@@ -41,6 +41,7 @@ from subsystems.intake import IntakeSubsystem
 from subsystems.feederSubsystem import FeederSubsystem
 from subsystems.shooterSubsystem import ShooterSubsystem
 from subsystems.hoodSubsystem import HoodSubsystem
+from subsystems.turretSubsystem import TurretSubsystem
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -110,6 +111,7 @@ class RobotContainer:
         self.feeder = FeederSubsystem()
         self.shooter = ShooterSubsystem()
         self.hood = HoodSubsystem()
+        self.turret = TurretSubsystem()
         
         #TODO add other subsystems as needed
 

@@ -47,3 +47,4 @@ class ShooterSubsystem(Subsystem):
         if Timer.getFPGATimestamp() - self._last_publish_time >= 0.25:
             self._last_publish_time = Timer.getFPGATimestamp()
             self.rpmPub.set(self.shooter.get_rotor_velocity().value * 60)
+            

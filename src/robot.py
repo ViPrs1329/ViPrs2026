@@ -31,6 +31,8 @@ class MyRobot(commands2.TimedCommandRobot):
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
 
+        self.robotContainer.turret.syncMotorWithEncoder()
+
         self.autonomousCommand = self.robotContainer.getAutonomousCommand()
         if self.autonomousCommand is not None:
             self.autonomousCommand.schedule()
@@ -47,6 +49,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def disabledInit(self):
         """This function is called initially when disabledd"""
+        self.robotContainer.turret.syncMotorWithEncoder()
 
     def disabledPeriodic(self):
         pass
@@ -57,18 +60,20 @@ class MyRobot(commands2.TimedCommandRobot):
             self.autonomousCommand.cancel()
             
         self.autonomousCommand = None
+        self.robotContainer.turret.syncMotorWithEncoder()
         
     def teleopPeriodic(self):
         """This function is called periodically during teleoperated mode."""
         
     def testInit(self): 
         """This function is called once each time the robot enters test mode."""
+        self.robotContainer.turret.syncMotorWithEncoder()
         
     def testPeriodic(self): 
         """This function is called periodically during test mode."""
 
     def simulationInit(self):
-        pass
+        self.robotContainer.turret.syncMotorWithEncoder()
 
     def simulationPeriodic(self):
         """"This function is called periodically during the simulation mode"""
