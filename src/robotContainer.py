@@ -40,6 +40,7 @@ from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
 from subsystems.intake import IntakeSubsystem
 from subsystems.feederSubsystem import FeederSubsystem
 from subsystems.shooterSubsystem import ShooterSubsystem
+from subsystems.hoodSubsystem import HoodSubsystem
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -108,6 +109,7 @@ class RobotContainer:
         self.intake = IntakeSubsystem()
         self.feeder = FeederSubsystem()
         self.shooter = ShooterSubsystem()
+        self.hood = HoodSubsystem()
         
         #TODO add other subsystems as needed
 
