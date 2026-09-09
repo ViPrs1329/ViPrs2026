@@ -145,8 +145,9 @@ class RobotContainer:
 
         d = min(d, 1)
         factor: float = d ** 3
+        limitedFactor = factor
 
-        return (factor * unitx, factor * unity)
+        return (limitedFactor * unitx, limitedFactor * unity)
 
     def rotInputShaper(self, x: float):
         """Adds a gain curve to the rotation input"""
@@ -168,6 +169,20 @@ class RobotContainer:
         self.drive = self.drive.with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
         self.drive = self.drive.with_rotational_deadband(self.maxAngularRate * 0.25 * self.driveInputScalar)
 
+    def updateFilteredInputs(self, targetInputs: list[float]):
+        """Updates the filtered speeds using a simple low-pass filter."""
+        alpha: float = 0.9  # Smoothing factor between 0 and 1
+        current = targetInputs
+        self.filteredInputs[0] = (
+            alpha * current[0] + (1 - alpha) * self.filteredInputs[0]
+        )
+        self.filteredInputs[1] = (
+            alpha * current[1] + (1 - alpha) * self.filteredInputs[1]
+        )
+        self.filteredInputs[2] = (
+            alpha * current[2] + (1 - alpha) * self.filteredInputs[2]
+        )
+
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
                
@@ -175,14 +190,15 @@ class RobotContainer:
             self.drivetrain.apply_request(
                 lambda: (
                     self.drive.with_velocity_x(
-                       -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[0] * self.maxSpeed * self.driveInputScalar
+                       -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[0] * self.maxSpeed * self.driveInputScalar
+                       # -self.drivingController.getLeftY() * self.maxSpeed * self.driveInputScalar
                     ) # Drive forward with negative Y (forward)
                     .with_velocity_y(
-                        -self.inputShaper(self.drivingController.getLeftY(), self.drivingController.getLeftX())[1] * self.maxSpeed * self.driveInputScalar
+                        -self.inputShaper(self.filteredInputs[1], self.filteredInputs[0])[1] * self.maxSpeed * self.driveInputScalar
+                        # -self.drivingController.getLeftX() * self.maxSpeed * self.driveInputScalar
                     ) # DRive left with negative X (left)
                     .with_rotational_rate(
-                        # change this to get right x. it is currently getting the right trigger axis since my computer is swapping them around
-                        -self.rotInputShaper(self.drivingController.getRightTriggerAxis()) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
+                        -self.rotInputShaper(self.filteredInputs[2]) * self.maxAngularRate * min(self.driveInputScalar * 2, 1)
                     ) # Drive counterclockwise with negative X (left)
                 )
             )
