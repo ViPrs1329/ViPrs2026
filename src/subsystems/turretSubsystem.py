@@ -17,11 +17,17 @@ class TurretSubsystem(Subsystem):
         )
         turretConfig.with_motor_output(
             configs.MotorOutputConfigs()
-            .with_inverted(signals.InvertedValue.COUNTER_CLOCKWISE_POSITIVE)
+            .with_inverted(signals.InvertedValue.CLOCKWISE_POSITIVE)
             .with_peak_forward_duty_cycle(0.1)
             .with_peak_reverse_duty_cycle(-0.1)
         )
-        turretConfig.slot0.with_k_p(0.05).with_k_i(0).with_k_d(0).with_k_s(0.015).with_k_v(0).with_k_a(0).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
+        turretConfig.with_motion_magic(
+            configs.MotionMagicConfigs()
+            .with_motion_magic_acceleration(200)
+            .with_motion_magic_cruise_velocity(80)
+            .with_motion_magic_jerk(500)
+        )
+        turretConfig.slot0.with_k_p(10).with_k_i(0).with_k_d(0).with_k_s(1.5).with_k_v(0).with_k_a(0).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
         self.turretMotor.configurator.apply(turretConfig)
 
         self.turretEncoder = hardware.CANcoder(Turret.CANids.turretEncoder)
@@ -37,7 +43,7 @@ class TurretSubsystem(Subsystem):
         self._last_publish_time = Timer.getFPGATimestamp()
 
     def rotateTo(self, rotation):
-        self.turretMotor.set_control(controls.PositionDutyCycle(rotation * 81))
+        self.turretMotor.set_control(controls.MotionMagicTorqueCurrentFOC(rotation * 81))
 
     def syncMotorWithEncoder(self):
         turretPosition = self.turretEncoder.get_position().value
