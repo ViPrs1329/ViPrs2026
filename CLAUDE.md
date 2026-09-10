@@ -6,7 +6,7 @@
 - Never invent WPILib method names. If unsure of an API method, ask or refer to the local type stubs / Python environment.
 
 ## Environment & Commands
-- **Python Version:** 3.11+
+- **Python Version:** 3.10+
 - **Python path:** `.venv/bin/python`
 - **Run Simulator:** `python -m robotpy sim`
 - **Run Tests:** `pytest` / `python -m pytest`
@@ -17,7 +17,7 @@
 - `robotcontainer.py`: Binds controller inputs, configures autonomous routines, and instantiates subsystems.
 - `subsystems/`: One file per subsystem (e.g., `arm.py`). Must subclass `commands2.Subsystem`.
 - `commands/`: Complex multi-subsystem commands. Simple subsystem actions should use inline `commands2.cmd` factories (e.g., `subsystem.runOnce(...)` or `subsystem.run(...)`).
-- `constants.py`: Store all CAN IDs, DIO ports, PID gains, and physical dimensions.
+- `constants.py`: Store all CAN IDs, DIO ports, and physical dimensions.
 
 ## Key Hardware & Vendor Libraries
 - **Drivetrain:** [e.g., Swerve / Phoenix 6 / REV MAXSwerve]

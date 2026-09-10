@@ -64,6 +64,7 @@ class RobotContainer:
         self.operatorController: CommandJoystick
         self.driveInputScalar: float
         self.filteredInputs: list[float] = [0.0, 0.0, 0.0]
+        self.intakeOut: bool = False
 
         self.initSubsystems()
         self.initControls()
@@ -113,6 +114,7 @@ class RobotContainer:
         self.shooter = ShooterSubsystem()
         self.hood = HoodSubsystem()
         self.turret = TurretSubsystem()
+        self.slapdown = SlapdownSubsystem()
         
         #TODO add other subsystems as needed
 
@@ -184,6 +186,13 @@ class RobotContainer:
             alpha * current[2] + (1 - alpha) * self.filteredInputs[2]
         )
 
+    def toggleIntake(self):
+        self.intakeOut = not self.intakeOut
+        if self.intakeOut == True:
+            self.slapdown.extendIntake()
+        if self.intakeOut == False:
+            self.slapdown.retractIntake()
+
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
                
@@ -248,6 +257,10 @@ class RobotContainer:
             InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable()))
         ).onFalse(
             InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter))
+        )
+
+        self.drivingController.y().onTrue(
+            InstantCommand(self.toggleIntake)
         )
 
         self.drivetrain.register_telemetry(

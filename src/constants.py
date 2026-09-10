@@ -30,7 +30,7 @@ class Feeder:
         backConveyorDutyCycle: float = -0.3
         leftConveyorDutyCycle: float = -0.3
         rightConveyorDutyCycle: float = 0.3
-        kickerDutyCycle: float = 0.4
+        kickerVelocity: float = 20
 
 class Intake:
     class CANids:
@@ -38,7 +38,7 @@ class Intake:
         rightIntakeMotor: int = 23
 
     class Consts:
-        intakeDutyCycle: float = 0.35
+        intakeVelocity: float = 30 #rps
 
 class Shooter:
     class CANids:

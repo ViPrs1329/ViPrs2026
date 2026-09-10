@@ -33,13 +33,14 @@ class FeederSubsystem(Subsystem):
             .with_stator_current_limit(20)
             .with_supply_current_limit(10)
         )
+        kickerConfig.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0)
         self.kicker.configurator.apply(kickerConfig)
 
     def feedForward(self):
         self.backConveyor.set_control(controls.DutyCycleOut(Feeder.Consts.backConveyorDutyCycle, enable_foc=True))
         self.leftConveyor.set_control(controls.DutyCycleOut(Feeder.Consts.leftConveyorDutyCycle, enable_foc=True))
         self.rightConveyor.set_control(controls.DutyCycleOut(Feeder.Consts.rightConveyorDutyCycle, enable_foc=True))
-        self.kicker.set_control(controls.DutyCycleOut(Feeder.Consts.kickerDutyCycle, enable_foc=True))
+        self.kicker.set_control(controls.VelocityTorqueCurrentFOC(Feeder.Consts.kickerVelocity).with_slot(0))
 
     def stopFeed(self):
         self.backConveyor.stopMotor()
@@ -51,4 +52,4 @@ class FeederSubsystem(Subsystem):
         self.backConveyor.set_control(controls.DutyCycleOut(-Feeder.Consts.backConveyorDutyCycle, enable_foc=True))
         self.leftConveyor.set_control(controls.DutyCycleOut(-Feeder.Consts.leftConveyorDutyCycle, enable_foc=True))
         self.rightConveyor.set_control(controls.DutyCycleOut(-Feeder.Consts.rightConveyorDutyCycle, enable_foc=True))
-        self.kicker.set_control(controls.DutyCycleOut(-Feeder.Consts.kickerDutyCycle, enable_foc=True))
+        self.kicker.set_control(controls.VelocityTorqueCurrentFOC(-Feeder.Consts.kickerVelocity).with_slot(0))
