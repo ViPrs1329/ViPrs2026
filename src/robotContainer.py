@@ -42,6 +42,7 @@ from subsystems.feederSubsystem import FeederSubsystem
 from subsystems.shooterSubsystem import ShooterSubsystem
 from subsystems.hoodSubsystem import HoodSubsystem
 from subsystems.turretSubsystem import TurretSubsystem
+from subsystems.slapdownSubsystem import SlapdownSubsystem
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry

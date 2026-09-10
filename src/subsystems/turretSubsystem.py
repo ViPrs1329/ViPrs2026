@@ -4,6 +4,8 @@ from phoenix6 import hardware, controls, configs, signals, StatusCode
 from ntcore import NetworkTableInstance, NetworkTable, FloatPublisher, StructPublisher
 from tuning.tunable import TunableDouble
 from wpilib import SmartDashboard, Timer, DriverStation
+from wpimath.geometry import Pose2d, Rotation2d
+import math
 
 class TurretSubsystem(Subsystem):
     def __init__(self):
@@ -44,6 +46,22 @@ class TurretSubsystem(Subsystem):
 
     def rotateTo(self, rotation):
         self.turretMotor.set_control(controls.MotionMagicTorqueCurrentFOC(rotation * 81))
+
+    @staticmethod
+    def calculateTurretRotation(robotPose: Pose2d, targetPose: Pose2d) -> float:
+        """Calculates the turret rotation (in revolutions) needed to face targetPose
+        from robotPose, in the turret's zeroed frame: forward = 0, left = 0.25,
+        right = -0.25, back = 0.5. Result is wrapped into the turret's bounds of
+        [-0.25, 0.75] revs.
+        """
+        relativeTranslation = targetPose.relativeTo(robotPose).translation()
+        bearing = Rotation2d(relativeTranslation.X(), relativeTranslation.Y())
+        turretRotation = bearing.radians() / math.tau
+
+        if turretRotation < Turret.Consts.minRotation:
+            turretRotation += 1.0
+
+        return turretRotation
 
     def syncMotorWithEncoder(self):
         turretPosition = self.turretEncoder.get_position().value

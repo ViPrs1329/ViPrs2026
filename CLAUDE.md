@@ -8,7 +8,7 @@
 ## Environment & Commands
 - **Python Version:** 3.11+
 - **Python path:** `.venv/bin/python`
-- **Run Simulator:** `robotpy sim`
+- **Run Simulator:** `python -m robotpy sim`
 - **Run Tests:** `pytest` / `python -m pytest`
 - **Formatter/Linter:** `ruff check .` / `black .`
 
