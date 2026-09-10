@@ -43,7 +43,7 @@ class TunerConstants:
 
     # The closed-loop output type to use for the steer motors;
     # This affects the PID/FF gains for the steer motors
-    _steer_closed_loop_output = swerve.ClosedLoopOutputType.TORQUE_CURRENT_FOC
+    _steer_closed_loop_output = swerve.ClosedLoopOutputType.VOLTAGE
     # The closed-loop output type to use for the drive motors;
     # This affects the PID/FF gains for the drive motors
     _drive_closed_loop_output = swerve.ClosedLoopOutputType.TORQUE_CURRENT_FOC
@@ -83,11 +83,6 @@ class TunerConstants:
         .with_stator_current_limit_enable(True)
         .with_supply_current_limit(40.0)
         .with_supply_current_limit_enable(True)
-    ).with_motion_magic(
-        configs.MotionMagicConfigs()
-        .with_motion_magic_cruise_velocity(85)
-        .with_motion_magic_acceleration(DPC.steerMotionMagicAcceleration) # should be approximately (Ilimit - ks) / ka
-        .with_motion_magic_jerk(500)
     )
     _encoder_initial_configs = configs.CANcoderConfiguration()
     # Configs for the Pigeon 2; leave this None to skip applying Pigeon 2 configs

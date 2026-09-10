@@ -18,11 +18,11 @@ class DrivePhysicalConstants:
     driveKV: float = 0.01 # A/(rot/s)
     driveKS: float = 2.5 # A
 
-    steerKP: float = 50.0 # A/rot
+    steerKP: float = 50 # A/rot
     steerKI: float = 0.0 # A/(rot*s)
     steerKD: float = 0.0 # A/(rot/s)
     steerKV: float = 0.0 # A/(rot/s)
-    steerKS: float = 0.22 # A
+    steerKS: float = 0.3 # A
 
     driveGearRatio: float = 6.746031746031747
     steerGearRatio: float = 21.428571428571427

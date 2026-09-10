@@ -26,18 +26,29 @@ class FeederSubsystem(Subsystem):
         self.leftConveyor.configurator.apply(mainConveyorConfig)
         self.rightConveyor.configurator.apply(mainConveyorConfig)
 
+        self.kicker = hardware.TalonFX(Feeder.CANids.kicker)
+        kickerConfig = configs.TalonFXConfiguration()
+        kickerConfig.with_current_limits(
+            configs.CurrentLimitsConfigs()
+            .with_stator_current_limit(20)
+            .with_supply_current_limit(10)
+        )
+        self.kicker.configurator.apply(kickerConfig)
+
     def feedForward(self):
         self.backConveyor.set_control(controls.DutyCycleOut(Feeder.Consts.backConveyorDutyCycle, enable_foc=True))
         self.leftConveyor.set_control(controls.DutyCycleOut(Feeder.Consts.leftConveyorDutyCycle, enable_foc=True))
         self.rightConveyor.set_control(controls.DutyCycleOut(Feeder.Consts.rightConveyorDutyCycle, enable_foc=True))
+        self.kicker.set_control(controls.DutyCycleOut(Feeder.Consts.kickerDutyCycle, enable_foc=True))
 
     def stopFeed(self):
         self.backConveyor.stopMotor()
         self.leftConveyor.stopMotor()
         self.rightConveyor.stopMotor()
+        self.kicker.stopMotor()
 
     def reverseFeed(self):
         self.backConveyor.set_control(controls.DutyCycleOut(-Feeder.Consts.backConveyorDutyCycle, enable_foc=True))
         self.leftConveyor.set_control(controls.DutyCycleOut(-Feeder.Consts.leftConveyorDutyCycle, enable_foc=True))
         self.rightConveyor.set_control(controls.DutyCycleOut(-Feeder.Consts.rightConveyorDutyCycle, enable_foc=True))
-        
+        self.kicker.set_control(controls.DutyCycleOut(-Feeder.Consts.kickerDutyCycle, enable_foc=True))

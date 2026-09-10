@@ -30,6 +30,7 @@ class Feeder:
         backConveyorDutyCycle: float = -0.3
         leftConveyorDutyCycle: float = -0.3
         rightConveyorDutyCycle: float = 0.3
+        kickerDutyCycle: float = 0.4
 
 class Intake:
     class CANids:
@@ -47,4 +48,3 @@ class Turret:
     class CANids:
         turretMotor: int = 51
         turretEncoder: int = 52
-        
