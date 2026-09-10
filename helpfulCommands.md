@@ -31,3 +31,7 @@ robotpy installer install robotpy
 ```bash
 source .venv/bin/activate
 ```
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```

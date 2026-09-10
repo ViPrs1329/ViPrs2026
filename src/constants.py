@@ -56,7 +56,7 @@ class Turret:
 
 class Slapdown:
     class CANids:
-        slapdownMotor: int = 21  # TODO: confirm actual CAN id
+        slapdownMotor: int = 21
 
     class Consts:
         gearRatio: float = 43.75
