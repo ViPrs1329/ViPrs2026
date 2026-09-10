@@ -14,7 +14,14 @@ class HoodSubsystem(Subsystem):
 
         self.tunableHood = TunableDouble("Hood Tunable", 0, "Hood")
 
-    def periodic(self):   
+    def hoodFromTunable(self):
         setpoint = self.tunableHood.get() 
         self.leftHood.set(setpoint)
         self.rightHood.set(setpoint)
+
+    def lowerHood(self):
+        self.leftHood.set(0)
+        self.rightHood.set(0)
+
+    def periodic(self):   
+        pass

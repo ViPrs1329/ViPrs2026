@@ -254,9 +254,9 @@ class RobotContainer:
         )
 
         self.drivingController.rightTrigger().onTrue(
-            InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable()))
+            InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable())).alongWith(InstantCommand(self.hood.hoodFromTunable))
         ).onFalse(
-            InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter))
+            InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter)).alongWith(InstantCommand(self.hood.lowerHood))
         )
 
         self.drivingController.y().onTrue(
