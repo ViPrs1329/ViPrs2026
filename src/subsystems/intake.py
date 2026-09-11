@@ -12,7 +12,7 @@ class IntakeSubsystem(Subsystem):
             .with_stator_current_limit(20)
             .with_supply_current_limit(10)
         )
-        intakeConfig.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0)
+        intakeConfig.slot0.with_k_p(10).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0)
 
         self.leftIntakeMotor = hardware.TalonFX(Intake.CANids.leftIntakeMotor)
         self.rightIntakeMotor = hardware.TalonFX(Intake.CANids.rightIntakeMotor)

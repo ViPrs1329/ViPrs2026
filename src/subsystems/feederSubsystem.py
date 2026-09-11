@@ -30,10 +30,10 @@ class FeederSubsystem(Subsystem):
         kickerConfig = configs.TalonFXConfiguration()
         kickerConfig.with_current_limits(
             configs.CurrentLimitsConfigs()
-            .with_stator_current_limit(20)
-            .with_supply_current_limit(10)
+            .with_stator_current_limit(40)
+            .with_supply_current_limit(20)
         )
-        kickerConfig.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0)
+        kickerConfig.slot0.with_k_p(10).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0)
         self.kicker.configurator.apply(kickerConfig)
 
     def feedForward(self):
