@@ -25,11 +25,11 @@ class TurretSubsystem(Subsystem):
         )
         turretConfig.with_motion_magic(
             configs.MotionMagicConfigs()
-            .with_motion_magic_acceleration(500)
+            .with_motion_magic_acceleration(1000)
             .with_motion_magic_cruise_velocity(80)
-            .with_motion_magic_jerk(500)
+            .with_motion_magic_jerk(1000)
         )
-        turretConfig.slot0.with_k_p(10).with_k_i(0).with_k_d(0).with_k_s(1.5).with_k_v(0).with_k_a(0).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
+        turretConfig.slot0.with_k_p(2).with_k_i(0).with_k_d(0).with_k_s(0.2).with_k_v(0).with_k_a(0).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
         self.turretMotor.configurator.apply(turretConfig)
 
         self.turretEncoder = hardware.CANcoder(Turret.CANids.turretEncoder)
@@ -52,7 +52,7 @@ class TurretSubsystem(Subsystem):
         self.robotPose = pose
 
     def rotateTo(self, rotation):
-        self.turretMotor.set_control(controls.MotionMagicTorqueCurrentFOC(rotation * 81))
+        self.turretMotor.set_control(controls.MotionMagicVoltage(rotation * 81))
 
     def getTargetPos(self, position: Pose2d):
         if self.alliance == DriverStation.Alliance.kRed:
