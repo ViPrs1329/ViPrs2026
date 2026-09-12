@@ -4,21 +4,6 @@ from pathplannerlib.config import PIDConstants
 from math import pi
 
 
-# class Limelight:
-
-#     class Consts:
-#         #TODO update these names to match the limelights on the robot
-#         tableNames: list[str] = ["limelight-lside", "limelight-rside"]
-
-#         # the measured standard deviation of a single limelight at a known reference area
-#         standardDeviationRef: tuple[float, float, float] = (0.05, 0.05, 0.01) # meters, meters, radians
-
-#         # the reference target area at which the standard deviation was measured
-#         targetAreaRef: float = 0.05 # percentage
-
-#     class States:
-#         pass
-
 class Feeder:
     class CANids:
         leftConveyor: int = 41
@@ -53,6 +38,11 @@ class Turret:
         # forward = 0 revs, left = 0.25 revs, right = -0.25 revs, back = 0.5 revs
         minRotation: float = -0.25
         maxRotation: float = 0.75
+
+class Limelight:
+    class Consts:
+        # LL4 connects to the robot's ethernet switch via static IP.
+        hostname: str = "10.13.29.4"
 
 class Slapdown:
     class CANids:

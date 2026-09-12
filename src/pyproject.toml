@@ -31,5 +31,6 @@ components = [
 requires = [
     "numpy",
     "phoenix6 >= 26.0",
-    "robotpy-pathplannerlib"
+    "robotpy-pathplannerlib",
+    "limelightlib-python"
 ]
