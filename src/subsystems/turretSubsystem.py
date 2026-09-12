@@ -43,6 +43,7 @@ class TurretSubsystem(Subsystem):
         self.posTunable: TunableDouble = TunableDouble("Tunable Pos", 0, "Turret")
         self.targetPose: StructPublisher = self.turretTable.getStructTopic("Target Pose", Pose2d).publish()
         self.robotPose: Pose2d = Pose2d(0, 0, 0)
+        self.targetDistance: float = 0
 
         self._last_publish_time = Timer.getFPGATimestamp()
 
@@ -99,7 +100,10 @@ class TurretSubsystem(Subsystem):
         self.turretMotor.set_position(turretPosition * 81)
 
     def periodic(self):
-        self.rotateTo(self.calculateTurretRotation(self.robotPose, self.getTargetPos(self.robotPose)))
+        targetPosition = self.getTargetPos(self.robotPose)
+        if targetPosition is not None:
+            self.targetDistance = math.sqrt((self.robotPose.X() - targetPosition.X()) ** 2 + (self.robotPose.Y() - targetPosition.Y()) ** 2)
+            self.rotateTo(self.calculateTurretRotation(self.robotPose, targetPosition))
         if Timer.getFPGATimestamp() - self._last_publish_time >= 0.25:
             self._last_publish_time = Timer.getFPGATimestamp()
             self.posPub.set(self.turretMotor.get_position().value / 81)

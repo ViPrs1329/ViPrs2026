@@ -19,6 +19,10 @@ class HoodSubsystem(Subsystem):
         self.leftHood.set(setpoint)
         self.rightHood.set(setpoint)
 
+    def setHood(self, setpoint: float):
+        self.leftHood.set(setpoint)
+        self.rightHood.set(setpoint)  
+
     def lowerHood(self):
         self.leftHood.set(0)
         self.rightHood.set(0)
