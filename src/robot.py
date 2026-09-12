@@ -26,6 +26,8 @@ class MyRobot(commands2.TimedCommandRobot):
         commands2.CommandScheduler.getInstance().run()
         # print(time.perf_counter() - self.lasttime)
         self.lasttime = time.perf_counter()
+        if self.robotContainer.limelight.latestEstimate is not None:
+            self.robotContainer.drivetrain.add_vision_measurement(self.robotContainer.limelight.latestEstimate.pose, self.robotContainer.limelight.latestEstimate.timestampSeconds, (2, 2, 2))
 
         
     def autonomousInit(self):

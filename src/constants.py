@@ -42,7 +42,7 @@ class Turret:
 class Limelight:
     class Consts:
         # LL4 connects to the robot's ethernet switch via static IP.
-        hostname: str = "10.13.29.4"
+        hostname: str = "10.13.29.11"
 
 class Slapdown:
     class CANids:

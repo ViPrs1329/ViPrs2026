@@ -43,6 +43,7 @@ from subsystems.shooterSubsystem import ShooterSubsystem
 from subsystems.hoodSubsystem import HoodSubsystem
 from subsystems.turretSubsystem import TurretSubsystem
 from subsystems.slapdownSubsystem import SlapdownSubsystem
+from subsystems.limelightSubsystem import LimelightSubsystem
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -115,6 +116,10 @@ class RobotContainer:
         self.hood = HoodSubsystem()
         self.turret = TurretSubsystem()
         self.slapdown = SlapdownSubsystem()
+        self.limelight = LimelightSubsystem(
+            lambda: self.drivetrain.get_state().pose.rotation(),
+            lambda: self.drivetrain.get_state().speeds.omega
+        )
         
         #TODO add other subsystems as needed
 
