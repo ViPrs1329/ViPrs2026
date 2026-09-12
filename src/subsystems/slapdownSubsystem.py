@@ -53,4 +53,4 @@ class SlapdownSubsystem(Subsystem):
 
     def periodic(self) -> None:
         pass
-        print(f"target: {self.slapdownMotor.get_closed_loop_reference().value}, current: {self.slapdownMotor.get_position().value}")
+        # print(f"target: {self.slapdownMotor.get_closed_loop_reference().value}, current: {self.slapdownMotor.get_position().value}")
