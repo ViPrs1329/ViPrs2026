@@ -19,6 +19,11 @@ from math import pi
 #     class States:
 #         pass
 
+class Limelight:
+    class Consts:
+        #TODO update to match the limelight's configured NetworkTables name
+        tableName: str = "limelight"
+
 class Feeder:
     class CANids:
         leftConveyor: int = 41
