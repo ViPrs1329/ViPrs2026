@@ -32,7 +32,7 @@ class SlapdownSubsystem(Subsystem):
         # once kG is tuned, feedforward scales with the cosine of the arm's angle from
         # horizontal: ~0 at vertical (top of stroke), maximal near horizontal (fully
         # extended).
-        slapdownConfig.slot0.with_k_p(200).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0).with_k_g(-10).with_gravity_type(signals.GravityTypeValue.ARM_COSINE).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
+        slapdownConfig.slot0.with_k_p(100).with_k_i(0).with_k_d(0).with_k_s(-0.4).with_k_v(0).with_k_a(0).with_k_g(-0.4).with_gravity_type(signals.GravityTypeValue.ARM_COSINE).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
         self.slapdownMotor.configurator.apply(slapdownConfig)
 
         # Seed the relative encoder with the arm's true angle at power-on: stowed is
@@ -43,14 +43,14 @@ class SlapdownSubsystem(Subsystem):
         self.slapdownMotor.set_position(Slapdown.Consts.stowedPosition)
 
     def extendIntake(self) -> None:
-        self.slapdownMotor.set_control(controls.MotionMagicTorqueCurrentFOC(Slapdown.Consts.extendedPosition))
+        self.slapdownMotor.set_control(controls.MotionMagicVoltage(Slapdown.Consts.extendedPosition))
 
     def retractIntake(self) -> None:
-        self.slapdownMotor.set_control(controls.MotionMagicTorqueCurrentFOC(Slapdown.Consts.stowedPosition))
+        self.slapdownMotor.set_control(controls.MotionMagicVoltage(Slapdown.Consts.stowedPosition))
     
     def stopSlapdown(self):
         self.slapdownMotor.stopMotor()
 
     def periodic(self) -> None:
         pass
-        # print(f"target: {self.slapdownMotor.get_closed_loop_reference().value}, current: {self.slapdownMotor.get_position().value}")
+        print(f"target: {self.slapdownMotor.get_closed_loop_reference().value}, current: {self.slapdownMotor.get_position().value}")

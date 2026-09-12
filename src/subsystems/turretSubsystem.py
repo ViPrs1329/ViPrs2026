@@ -27,7 +27,7 @@ class TurretSubsystem(Subsystem):
             configs.MotionMagicConfigs()
             .with_motion_magic_acceleration(1000)
             .with_motion_magic_cruise_velocity(80)
-            .with_motion_magic_jerk(1000)
+            .with_motion_magic_jerk(5000)
         )
         turretConfig.slot0.with_k_p(2).with_k_i(0).with_k_d(0).with_k_s(0.2).with_k_v(0).with_k_a(0).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
         self.turretMotor.configurator.apply(turretConfig)
@@ -103,6 +103,6 @@ class TurretSubsystem(Subsystem):
         if Timer.getFPGATimestamp() - self._last_publish_time >= 0.25:
             self._last_publish_time = Timer.getFPGATimestamp()
             self.posPub.set(self.turretMotor.get_position().value / 81)
-            print(self.alliance)
+            # print(self.alliance)
             self.targetPose.set(self.getTargetPos(self.robotPose))
             self.alliance = DriverStation.getAlliance()

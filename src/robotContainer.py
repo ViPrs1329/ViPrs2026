@@ -260,7 +260,7 @@ class RobotContainer:
         )
 
         self.operatorController.x().onTrue(
-            InstantCommand(self.slapdown.stopSlapdown)
+            InstantCommand(self.toggleIntake)
         )
 
         self.drivetrain.register_telemetry(
