@@ -18,17 +18,21 @@ class SlapdownSubsystem(Subsystem):
             configs.FeedbackConfigs()
             .with_sensor_to_mechanism_ratio(Slapdown.Consts.gearRatio)
         )
+        slapdownConfig.with_motor_output(
+            configs.MotorOutputConfigs()
+            .with_inverted(signals.InvertedValue.COUNTER_CLOCKWISE_POSITIVE)
+        )
         slapdownConfig.with_motion_magic(
             configs.MotionMagicConfigs()
             .with_motion_magic_cruise_velocity(1)
-            .with_motion_magic_acceleration(2)
+            .with_motion_magic_acceleration(0.1)
             .with_motion_magic_jerk(20)
         )
         # All gains start at 0 for manual tuning. GravityType is Arm_Cosine so that
         # once kG is tuned, feedforward scales with the cosine of the arm's angle from
         # horizontal: ~0 at vertical (top of stroke), maximal near horizontal (fully
         # extended).
-        slapdownConfig.slot0.with_k_p(0).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0).with_k_g(0).with_gravity_type(signals.GravityTypeValue.ARM_COSINE).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
+        slapdownConfig.slot0.with_k_p(200).with_k_i(0).with_k_d(0).with_k_s(0).with_k_v(0).with_k_a(0).with_k_g(-10).with_gravity_type(signals.GravityTypeValue.ARM_COSINE).with_static_feedforward_sign(signals.StaticFeedforwardSignValue.USE_CLOSED_LOOP_SIGN)
         self.slapdownMotor.configurator.apply(slapdownConfig)
 
         # Seed the relative encoder with the arm's true angle at power-on: stowed is
@@ -43,3 +47,10 @@ class SlapdownSubsystem(Subsystem):
 
     def retractIntake(self) -> None:
         self.slapdownMotor.set_control(controls.MotionMagicTorqueCurrentFOC(Slapdown.Consts.stowedPosition))
+    
+    def stopSlapdown(self):
+        self.slapdownMotor.stopMotor()
+
+    def periodic(self) -> None:
+        pass
+        # print(f"target: {self.slapdownMotor.get_closed_loop_reference().value}, current: {self.slapdownMotor.get_position().value}")

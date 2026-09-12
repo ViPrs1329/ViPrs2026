@@ -61,7 +61,7 @@ class RobotContainer:
         self.autoChooser: SendableChooser
         self.drivetrain: CommandSwerveDrivetrain
         self.drivingController: CommandXboxController
-        self.operatorController: CommandJoystick
+        self.operatorController: CommandXboxController
         self.driveInputScalar: float
         self.filteredInputs: list[float] = [0.0, 0.0, 0.0]
         self.intakeOut: bool = False
@@ -125,7 +125,7 @@ class RobotContainer:
         self.driveInputScalar = 0.5
 
         # so i can test the driving without the program errroring out
-        # self.operatorController = CommandJoystick(1)
+        self.operatorController = CommandXboxController(1)
         #TODO verify that these are the correct ports
         #TODO verify that we will need a xbox controller and a button board
 
@@ -247,20 +247,20 @@ class RobotContainer:
             InstantCommand(self.goMedium)
         )
 
-        self.drivingController.rightBumper().onTrue(
+        self.operatorController.rightBumper().onTrue(
             InstantCommand(self.intake.startIntake)
         ).onFalse(
             InstantCommand(self.intake.stopIntake)
         )
 
-        self.drivingController.rightTrigger().onTrue(
+        self.operatorController.rightTrigger().onTrue(
             InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable())).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
         ).onFalse(
             InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter)).alongWith(InstantCommand(lambda: self.hood.lowerHood()))
         )
 
-        self.drivingController.y().onTrue(
-            InstantCommand(self.toggleIntake)
+        self.operatorController.x().onTrue(
+            InstantCommand(self.slapdown.stopSlapdown)
         )
 
         self.drivetrain.register_telemetry(

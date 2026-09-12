@@ -69,6 +69,8 @@ class MyRobot(commands2.TimedCommandRobot):
             self.robotContainer.drivingController.getLeftY(),
             self.robotContainer.drivingController.getRightX()
         ])
+
+        self.robotContainer.turret.setRobotPose(self.robotContainer.drivetrain.get_state().pose)
         
     def testInit(self): 
         """This function is called once each time the robot enters test mode."""

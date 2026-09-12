@@ -25,7 +25,7 @@ class TurretSubsystem(Subsystem):
         )
         turretConfig.with_motion_magic(
             configs.MotionMagicConfigs()
-            .with_motion_magic_acceleration(200)
+            .with_motion_magic_acceleration(500)
             .with_motion_magic_cruise_velocity(80)
             .with_motion_magic_jerk(500)
         )
@@ -41,11 +41,42 @@ class TurretSubsystem(Subsystem):
         self.targetPub: FloatPublisher = self.turretTable.getFloatTopic("TargetPos").publish()
         self.targetPub.set(0)
         self.posTunable: TunableDouble = TunableDouble("Tunable Pos", 0, "Turret")
+        self.targetPose: StructPublisher = self.turretTable.getStructTopic("Target Pose", Pose2d).publish()
+        self.robotPose: Pose2d = Pose2d(0, 0, 0)
 
         self._last_publish_time = Timer.getFPGATimestamp()
 
+        self.alliance = DriverStation.getAlliance()
+
+    def setRobotPose(self, pose: Pose2d):
+        self.robotPose = pose
+
     def rotateTo(self, rotation):
         self.turretMotor.set_control(controls.MotionMagicTorqueCurrentFOC(rotation * 81))
+
+    def getTargetPos(self, position: Pose2d):
+        if self.alliance == DriverStation.Alliance.kRed:
+            if position.X() > 11.915:
+                # on blue size
+                return Pose2d(11.915, 4, 0)
+            else:
+                # passing
+                if position.Y() < 4:
+                    return Pose2d(16.54 - 2, 2, 0)
+                else:
+                    return Pose2d(16.54 - 2, 6, 0)
+
+        elif self.alliance == DriverStation.Alliance.kBlue:
+            if position.X() < 4.625:
+                # on red side
+                return Pose2d(4.625, 4, 0)
+            else:
+                # passing
+                if position.Y() < 4:
+                    return Pose2d(2, 2, 0)
+                else:
+                    return Pose2d(2, 6, 0)
+
 
     @staticmethod
     def calculateTurretRotation(robotPose: Pose2d, targetPose: Pose2d) -> float:
@@ -68,7 +99,10 @@ class TurretSubsystem(Subsystem):
         self.turretMotor.set_position(turretPosition * 81)
 
     def periodic(self):
+        self.rotateTo(self.calculateTurretRotation(self.robotPose, self.getTargetPos(self.robotPose)))
         if Timer.getFPGATimestamp() - self._last_publish_time >= 0.25:
             self._last_publish_time = Timer.getFPGATimestamp()
             self.posPub.set(self.turretMotor.get_position().value / 81)
-            self.rotateTo(0.25)
+            print(self.alliance)
+            self.targetPose.set(self.getTargetPos(self.robotPose))
+            self.alliance = DriverStation.getAlliance()
