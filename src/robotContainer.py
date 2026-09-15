@@ -257,6 +257,8 @@ class RobotContainer:
 
         self.operatorController.rightTrigger().onTrue(
             InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))).alongWith(InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle)))
+            # InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable())).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
+
         ).onFalse(
             InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter)).alongWith(InstantCommand(lambda: self.hood.lowerHood()))
         )
