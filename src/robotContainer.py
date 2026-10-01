@@ -31,6 +31,8 @@ from commands2 import PrintCommand
 from commands2 import InstantCommand
 from commands2 import RunCommand
 from commands2 import CommandScheduler
+from commands2 import SequentialCommandGroup
+from commands2 import WaitCommand
 from commands2.button import CommandXboxController
 from commands2.button import Trigger
 
@@ -66,6 +68,7 @@ class RobotContainer:
         self.driveInputScalar: float
         self.filteredInputs: list[float] = [0.0, 0.0, 0.0]
         self.intakeOut: bool = False
+        self.intaking: bool = False
 
         self.initSubsystems()
         self.initControls()
@@ -195,6 +198,13 @@ class RobotContainer:
         if self.intakeOut == False:
             self.slapdown.retractIntake()
 
+    def toggleIntakeMotors(self):
+        self.intaking = not self.intaking
+        if self.intaking == True:
+            self.intake.startIntake()
+        if self.intaking == False:
+            self.intake.stopIntake()
+
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
                
@@ -250,17 +260,31 @@ class RobotContainer:
         )
 
         self.operatorController.rightBumper().onTrue(
-            InstantCommand(self.intake.startIntake)
-        ).onFalse(
-            InstantCommand(self.intake.stopIntake)
+            InstantCommand(self.toggleIntakeMotors)
         )
 
         self.operatorController.rightTrigger().onTrue(
-            InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))).alongWith(InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle)))
+            SequentialCommandGroup(
+                WaitCommand(2),
+                InstantCommand(self.feeder.feedForward)
+            )
+            .alongWith(
+                InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))
+            ).alongWith(
+                InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle))
+            )
             # InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable())).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
 
         ).onFalse(
             InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter)).alongWith(InstantCommand(lambda: self.hood.lowerHood()))
+        )
+
+        self.operatorController.leftBumper().onTrue(
+            InstantCommand(self.intake.reverseIntake)
+        )
+
+        self.operatorController.leftTrigger().onTrue(
+            InstantCommand(self.feeder.reverseFeed)
         )
 
         self.operatorController.x().onTrue(

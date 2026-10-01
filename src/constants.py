@@ -43,7 +43,7 @@ class Intake:
         rightIntakeMotor: int = 23
 
     class Consts:
-        intakeVelocity: float = 45 #rps
+        intakeVelocity: float = 55 #rps
 
 class Shooter:
     class CANids:

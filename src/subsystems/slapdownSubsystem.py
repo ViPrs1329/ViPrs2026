@@ -25,7 +25,7 @@ class SlapdownSubsystem(Subsystem):
         slapdownConfig.with_motion_magic(
             configs.MotionMagicConfigs()
             .with_motion_magic_cruise_velocity(1)
-            .with_motion_magic_acceleration(0.1)
+            .with_motion_magic_acceleration(0.2)
             .with_motion_magic_jerk(20)
         )
         # All gains start at 0 for manual tuning. GravityType is Arm_Cosine so that
