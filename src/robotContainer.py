@@ -264,31 +264,38 @@ class RobotContainer:
         )
 
         self.operatorController.rightTrigger().onTrue(
-            SequentialCommandGroup(
-                WaitCommand(2),
-                InstantCommand(self.feeder.feedForward)
-            )
-            .alongWith(
-                InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))
-            ).alongWith(
-                InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle))
-            )
+            InstantCommand(self.feeder.feedForward)
             # InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable())).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
 
         ).onFalse(
-            InstantCommand(self.feeder.stopFeed).alongWith(InstantCommand(self.shooter.stopShooter)).alongWith(InstantCommand(lambda: self.hood.lowerHood()))
+            InstantCommand(self.feeder.stopFeed)
         )
 
         self.operatorController.leftBumper().onTrue(
             InstantCommand(self.intake.reverseIntake)
+        ).onFalse(
+            InstantCommand(self.intake.stopIntake)
         )
 
         self.operatorController.leftTrigger().onTrue(
             InstantCommand(self.feeder.reverseFeed)
+        ).onFalse(
+            InstantCommand(self.feeder.stopFeed)
         )
 
         self.operatorController.x().onTrue(
             InstantCommand(self.toggleIntake)
+        )
+
+        self.operatorController.a().onTrue(
+            InstantCommand(lambda: self.shooter.shootFromTunable()).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
+
+            # InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))
+            # .alongWith(
+            #     InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle))
+            # )
+        ).onFalse(
+            InstantCommand(self.shooter.stopShooter).alongWith(InstantCommand(lambda: self.hood.lowerHood()))
         )
 
         self.drivetrain.register_telemetry(
