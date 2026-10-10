@@ -39,13 +39,6 @@ from commands2.button import Trigger
 from phoenix6 import swerve
 
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
-from subsystems.intake import IntakeSubsystem
-from subsystems.feederSubsystem import FeederSubsystem
-from subsystems.shooterSubsystem import ShooterSubsystem
-from subsystems.hoodSubsystem import HoodSubsystem
-from subsystems.turretSubsystem import TurretSubsystem
-from subsystems.slapdownSubsystem import SlapdownSubsystem
-from subsystems.limelightSubsystem import LimelightSubsystem
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -113,13 +106,6 @@ class RobotContainer:
         
         # create subsystems
         self.drivetrain = TunerConstants.create_drivetrain()
-        self.intake = IntakeSubsystem()
-        self.feeder = FeederSubsystem()
-        self.shooter = ShooterSubsystem()
-        self.hood = HoodSubsystem()
-        self.turret = TurretSubsystem()
-        self.slapdown = SlapdownSubsystem()
-        self.limelightSubsystem = LimelightSubsystem()
         
         #TODO add other subsystems as needed
 
@@ -191,20 +177,6 @@ class RobotContainer:
             alpha * current[2] + (1 - alpha) * self.filteredInputs[2]
         )
 
-    def toggleIntake(self):
-        self.intakeOut = not self.intakeOut
-        if self.intakeOut == True:
-            self.slapdown.extendIntake()
-        if self.intakeOut == False:
-            self.slapdown.retractIntake()
-
-    def toggleIntakeMotors(self):
-        self.intaking = not self.intaking
-        if self.intaking == True:
-            self.intake.startIntake()
-        if self.intaking == False:
-            self.intake.stopIntake()
-
     def configureButtonBindings(self):
         """Configure the button bindings for user input."""
                
@@ -259,44 +231,6 @@ class RobotContainer:
             InstantCommand(self.goMedium)
         )
 
-        self.operatorController.rightBumper().onTrue(
-            InstantCommand(self.toggleIntakeMotors)
-        )
-
-        self.operatorController.rightTrigger().onTrue(
-            InstantCommand(self.feeder.feedForward)
-            # InstantCommand(self.feeder.feedForward).alongWith(InstantCommand(lambda: self.shooter.shootFromTunable())).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
-
-        ).onFalse(
-            InstantCommand(self.feeder.stopFeed)
-        )
-
-        self.operatorController.leftBumper().onTrue(
-            InstantCommand(self.intake.reverseIntake)
-        ).onFalse(
-            InstantCommand(self.intake.stopIntake)
-        )
-
-        self.operatorController.leftTrigger().onTrue(
-            InstantCommand(self.feeder.reverseFeed)
-        ).onFalse(
-            InstantCommand(self.feeder.stopFeed)
-        )
-
-        self.operatorController.x().onTrue(
-            InstantCommand(self.toggleIntake)
-        )
-
-        self.operatorController.a().onTrue(
-            InstantCommand(lambda: self.shooter.shootFromTunable()).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
-
-            # InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))
-            # .alongWith(
-            #     InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle))
-            # )
-        ).onFalse(
-            InstantCommand(self.shooter.stopShooter).alongWith(InstantCommand(lambda: self.hood.lowerHood()))
-        )
 
         self.drivetrain.register_telemetry(
             lambda state: self._logger.telemeterize(state)

@@ -26,15 +26,9 @@ class MyRobot(commands2.TimedCommandRobot):
         commands2.CommandScheduler.getInstance().run()
         # print(time.perf_counter() - self.lasttime)
         self.lasttime = time.perf_counter()
-        estimated = self.robotContainer.limelightSubsystem.getEstimatedPose()
-        if estimated is not None:
-            self.robotContainer.drivetrain.add_vision_measurement(estimated.pose, estimated.timestampSeconds, (6, 6, 6))
-
         
     def autonomousInit(self):
         """This function is run once each time the robot enters autonomous mode."""
-
-        self.robotContainer.turret.syncMotorWithEncoder()
 
         self.autonomousCommand = self.robotContainer.getAutonomousCommand()
         if self.autonomousCommand is not None:
@@ -52,7 +46,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def disabledInit(self):
         """This function is called initially when disabledd"""
-        self.robotContainer.turret.syncMotorWithEncoder()
 
     def disabledPeriodic(self):
         pass
@@ -63,7 +56,6 @@ class MyRobot(commands2.TimedCommandRobot):
             self.autonomousCommand.cancel()
             
         self.autonomousCommand = None
-        self.robotContainer.turret.syncMotorWithEncoder()
         
     def teleopPeriodic(self):
         """This function is called periodically during teleoperated mode."""
@@ -73,18 +65,15 @@ class MyRobot(commands2.TimedCommandRobot):
             self.robotContainer.drivingController.getRightX()
         ])
 
-        self.robotContainer.turret.setRobotPose(self.robotContainer.drivetrain.get_state().pose)
         
     def testInit(self): 
         """This function is called once each time the robot enters test mode."""
-        self.robotContainer.turret.syncMotorWithEncoder()
         
     def testPeriodic(self): 
         """This function is called periodically during test mode."""
 
     def simulationInit(self):
-        self.robotContainer.turret.syncMotorWithEncoder()
-
+        pass
     def simulationPeriodic(self):
         """"This function is called periodically during the simulation mode"""
         
