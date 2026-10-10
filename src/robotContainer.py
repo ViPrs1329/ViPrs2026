@@ -39,6 +39,8 @@ from commands2.button import Trigger
 from phoenix6 import swerve
 
 from subsystems.krakenDriveSubsystem import CommandSwerveDrivetrain
+from subsystems.shooter import Shooter
+from subsystems.feeder import Feeder
 
 from generated.tuner_constants import TunerConstants
 from telemetry import Telemetry
@@ -106,6 +108,8 @@ class RobotContainer:
         
         # create subsystems
         self.drivetrain = TunerConstants.create_drivetrain()
+        self.shooter = Shooter()
+        self.feeder = Feeder()
         
         #TODO add other subsystems as needed
 
