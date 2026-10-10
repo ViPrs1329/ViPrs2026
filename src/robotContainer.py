@@ -288,12 +288,12 @@ class RobotContainer:
         )
 
         self.operatorController.a().onTrue(
-            InstantCommand(lambda: self.shooter.shootFromTunable()).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
+            # InstantCommand(lambda: self.shooter.shootFromTunable()).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
 
-            # InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))
-            # .alongWith(
-            #     InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle))
-            # )
+            InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))
+            .alongWith(
+                InstantCommand(lambda: self.hood.setHood(self.shooter.getCalibration(self.turret.targetDistance).hoodAngle))
+            )
         ).onFalse(
             InstantCommand(self.shooter.stopShooter).alongWith(InstantCommand(lambda: self.hood.lowerHood()))
         )
