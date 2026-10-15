@@ -72,8 +72,8 @@ class RobotContainer:
 
         self.initSubsystems()
         self.initControls()
-        self.initAutoChooser()
         self.initCommands()
+        self.initAutoChooser()
         self.configureButtonBindings()
 
         self.maxSpeed = (
@@ -88,10 +88,10 @@ class RobotContainer:
             .with_deadband(self.maxSpeed * 0.1 * self.driveInputScalar)
             .with_rotational_deadband(
                 self.maxAngularRate * 0.25 * self.driveInputScalar
-            )  # Add a 3% deadband
+            )  # Add a 10% deadband
             .with_drive_request_type(
                 swerve.SwerveModule.DriveRequestType.VELOCITY
-            )  # Use open-loop control for drive motors
+            )  # Use closed-loop control for drive motors
         )
         self.brake = swerve.requests.SwerveDriveBrake()
         self.point = swerve.requests.PointWheelsAt()
@@ -147,6 +147,9 @@ class RobotContainer:
         """Adds a gain curve to the controller input"""
 
         d: float = sqrt(x ** 2 + y ** 2)
+
+        if d < 0.0001:
+            return (0, 0)
 
         unitx = x / d
         unity = y / d
@@ -287,7 +290,7 @@ class RobotContainer:
             InstantCommand(self.toggleIntake)
         )
 
-        self.operatorController.a().onTrue(
+        self.operatorController.a().whileTrue(
             # InstantCommand(lambda: self.shooter.shootFromTunable()).alongWith(InstantCommand(lambda: self.hood.hoodFromTunable()))
 
             InstantCommand(lambda: self.shooter.setRPM(self.shooter.getCalibration(self.turret.targetDistance).rpm))

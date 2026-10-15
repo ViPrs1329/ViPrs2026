@@ -250,7 +250,7 @@ class CommandSwerveDrivetrain(Subsystem, swerve.SwerveDrivetrain):
             lambda speeds, feedforwards: self.set_control(
                 self._apply_robot_speeds
                 .with_speeds(ChassisSpeeds(speeds.vx, speeds.vy, speeds.omega))
-                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesYNewtons)
+                .with_wheel_force_feedforwards_x(feedforwards.robotRelativeForcesXNewtons)
                 .with_wheel_force_feedforwards_y(feedforwards.robotRelativeForcesYNewtons)
             ),
             PPHolonomicDriveController(

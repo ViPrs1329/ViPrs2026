@@ -42,7 +42,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousPeriodic(self):
         """This function is called periodically during autonomous."""
-        pass
+        self.robotContainer.turret.setRobotPose(self.robotContainer.drivetrain.get_state().pose)
 
     def autonomousExit(self) -> None:
         if self.autonomousCommand is not None:
